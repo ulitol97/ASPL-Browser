@@ -1,0 +1,48 @@
+hoja: estilo *
+
+estilo: selector OPENBRACE regla * CLOSEBRACE
+
+regla: clave COLON valor SEMICOLON
+
+valor: color | size | alignment | fontstyle
+
+size: number PX
+
+number: [0-9]+
+
+selector:  H1 | H2 | P
+
+clave: COLOR | FONTSIZE | TEXTALIGN | FONTSTYLE
+
+color: BLACK | RED | GREEN
+
+alignment: LEFT | CENTER | RIGHT
+
+fontstyle: NORMAL | BOLD | ITALIC
+
+// Léxico
+
+OPENBRACE: '{'
+CLOSEBRACE: '}'
+COLON: ':'
+SEMICOLON: ';'
+H1: 'h1'
+H2: 'h2'
+P: 'p'
+PX: 'px'
+COLOR: 'color'
+FONTSIZE: 'font-size'
+TEXTALIGN: 'text'-align'
+FONTSTYLE: 'font-style'
+BLACK: 'black'
+RED: 'red'
+GREEN: 'green'
+LEFT: 'left'
+RIGHT: 'right'
+CENTER: 'center'
+NORMAL: 'normal'
+BOLD: 'bold'
+ITALIC: 'italic'
+
+
+

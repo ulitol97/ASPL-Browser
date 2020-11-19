@@ -1,0 +1,72 @@
+document: (DOCTYPEUPPER|DOCTYPELOWER) html
+
+html: OPENHTML head body CLOSEHTML
+
+head: OPENHEAD title link? CLOSEHEAD
+
+title: OPENTITLE text+ CLOSETITLE
+
+link: OPENLINK linkAttribute CLOSELINK
+
+linkAttribute: HREF EQ QUOTE text QUOTE
+
+body: OPENBODY element* CLOSEBODY
+
+element: header1 | header2 | paragraph
+
+header1: OPENH1 value CLOSEH1
+
+header2: OPENH2 value CLOSEH2
+
+paragraph: OPENP value CLOSEP
+
+value: text* inner* text*
+
+text: word*
+
+word: [a-zA-Z0-9.,;]+
+
+inner: bold | italic | underline
+
+bold: OPENBOLD value CLOSEBOLD
+
+italic: OPENITALIC value CLOSEITALIC
+
+underline: OPENUNDERLINE value CLOSEUNDERLINE
+
+// Léxico
+
+DOCTYPEUPPER: '!<DOCTYPE html>'
+DOCTYPELOWER: '!<doctype html>'
+OPENHTML: '<html>'
+CLOSEHTML: '</html>'
+HREF: 'href'
+REL: 'rel'
+TYPE: 'type'
+OPENTITLE: '<title>'
+CLOSETITLE: '</title>'
+OPENHEAD: '<head>'
+CLOSEHEAD: '</head>'
+OPENLINK: '<link'
+CLOSELINK: 'rel="stylesheet" type="text/css">'
+OPENBODY: '<body>'
+CLOSEBODY: '</body>'
+OPENH1: '<h1>'
+CLOSEH1: '</h1>'
+OPENH2: '<h2>'
+CLOSEH2: '</h2>'
+OPENP: '<p>'
+CLOSEP: '</p>'
+OPENBOLD: '<b>'
+CLOSEBOLD: '</b>'
+OPENITALIC: '<i>'
+CLOSEITALIC: '</i>'
+OPENUNDERLINE: '<u>'
+CLOSEUNDERLINE: '</u>'
+
+WS: ' '
+EQ: '='
+QUOTE: '"'
+TAGOPEN: '<'
+BAR: '/'
+TAGCLOSE '>'
