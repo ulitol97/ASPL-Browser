@@ -1,24 +1,24 @@
-hoja: estilo *
+stylesheet: style* // OK
 
-estilo: selector OPENBRACE regla * CLOSEBRACE
+style: selector OPENBRACE rule* CLOSEBRACE // OK
 
-regla: clave COLON valor SEMICOLON
+rule: key COLON value SEMICOLON
 
-valor: color | size | alignment | fontstyle
+value: color | size | alignment | fontstyle
 
 size: number PX
 
 number: [0-9]+
 
-selector:  H1 | H2 | P
+selector:  H1 | H2 | P // OK
 
-clave: COLOR | FONTSIZE | TEXTALIGN | FONTSTYLE
+key: COLOR | FONTSIZE | TEXTALIGN | FONTSTYLE
 
-color: BLACK | RED | GREEN
+color: BLACK | RED | GREEN | BLUE | WHITE // OK
 
-alignment: LEFT | CENTER | RIGHT
+alignment: LEFT | CENTER | RIGHT // OK
 
-fontstyle: NORMAL | BOLD | ITALIC
+fontstyle: NORMAL | BOLD | ITALIC // OK
 
 // Léxico
 
@@ -32,11 +32,13 @@ P: 'p'
 PX: 'px'
 COLOR: 'color'
 FONTSIZE: 'font-size'
-TEXTALIGN: 'text'-align'
+TEXTALIGN: 'text-align'
 FONTSTYLE: 'font-style'
 BLACK: 'black'
 RED: 'red'
 GREEN: 'green'
+BLUE: 'blue'
+WHITE: 'white'
 LEFT: 'left'
 RIGHT: 'right'
 CENTER: 'center'

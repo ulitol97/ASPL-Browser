@@ -15,6 +15,10 @@ public class Declaration implements AstCss {
 		this.selector = selector;
 		this.rules = rules;
 	}
+	
+	public Declaration(List<Rule> rules) {
+		this.rules = rules;
+	}
 
 	@Override
 	public Object accept(Visitor v, Object param) {

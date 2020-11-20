@@ -12,6 +12,10 @@ public class Rule implements AstCss {
 		this.key = key;
 		this.value = value;
 	}
+	
+	public Rule(String value) {
+		this.value = value;
+	}
 
 	@Override
 	public Object accept(Visitor v, Object param) {
