@@ -10,8 +10,11 @@ import simpleCss.ast.stylesheet.Stylesheet;
 
 public class Parser {
 
-	Lexicon lex;
-	boolean error = false;
+	private Lexicon lex;
+
+	// Error management
+	private List<String> errors = new ArrayList<String>();
+	private boolean syntaxError = false;
 
 	public Parser(Lexicon lex) {
 		this.lex = lex;
@@ -46,8 +49,7 @@ public class Parser {
 			selector = selector();
 		}
 
-
-		if (error)
+		if (syntaxError)
 			return null;
 		return declarations;
 
@@ -63,8 +65,10 @@ public class Parser {
 		Token tok = lex.getToken();
 		// Expect '{'
 		if (tok.getToken() != TokensId.OPENBRACE) {
-			syntaxError(String.format("Expected '{' before CSS block, found %s",
-					tok.getLexeme()), tok.getLine());
+			syntaxError(
+					String.format("Expected '{' before CSS block, found '%s'",
+							tok.getLexeme()),
+					tok.getLine());
 		}
 
 		// Expect rules
@@ -73,11 +77,13 @@ public class Parser {
 		tok = lex.getToken();
 		// Expect '}
 		if (tok.getToken() != TokensId.CLOSEBRACE) {
-			syntaxError(String.format("Expected '}' after CSS block, found %s",
-					tok.getLexeme()), tok.getLine());
+			syntaxError(
+					String.format("Expected '}' after CSS block, found '%s'",
+							tok.getLexeme()),
+					tok.getLine());
 		}
 
-		if (error)
+		if (syntaxError)
 			return null;
 
 		if (selector != null && rules != null) {
@@ -107,7 +113,7 @@ public class Parser {
 			key = key();
 		}
 
-		if (error)
+		if (syntaxError)
 			return null;
 		return rules;
 	}
@@ -127,7 +133,7 @@ public class Parser {
 		// Expect ':'
 		if (tok.getToken() != TokensId.COLON) {
 			syntaxError(String.format(
-					"Expected ':' between CSS key and its value, found %s",
+					"Expected ':' between CSS key and its value, found '%s'",
 					tok.getLexeme()), tok.getLine());
 		}
 
@@ -156,7 +162,7 @@ public class Parser {
 
 		default:
 			syntaxError(String.format(
-					"Expected a valid CSS property value, found %s",
+					"Expected a valid CSS property value, found '%s'",
 					tok.getLexeme()), tok.getLine());
 			break;
 		}
@@ -164,12 +170,13 @@ public class Parser {
 		tok = lex.getToken();
 		// Expect ';'
 		if (tok.getToken() != TokensId.SEMICOLON) {
-			syntaxError(String.format(
-					"Expected ';' to close CSS rule, found %s",
-					tok.getLexeme()), tok.getLine());
+			syntaxError(
+					String.format("Expected ';' to close CSS rule, found '%s'",
+							tok.getLexeme()),
+					tok.getLine());
 		}
 
-		if (error)
+		if (syntaxError)
 			return null;
 
 		if (key != null && value != null) {
@@ -186,6 +193,11 @@ public class Parser {
 		String selector = null;
 
 		switch (tok.getToken()) {
+
+		// No selector found, CSS file ends
+		case EOF:
+			lex.returnLastToken();
+			break;
 		case H1:
 			selector = "h1";
 			break;
@@ -199,7 +211,7 @@ public class Parser {
 			break;
 
 		default:
-			syntaxError(String.format("Expected a CSS selector, found %s",
+			syntaxError(String.format("Expected a CSS selector, found '%s'",
 					tok.getLexeme()), tok.getLine());
 			break;
 		}
@@ -213,6 +225,10 @@ public class Parser {
 		String key = null;
 
 		switch (tok.getToken()) {
+		// Return null so that the parser stops looking for rules
+		case CLOSEBRACE:
+			lex.returnLastToken();
+			break;
 		case COLOR:
 			key = "color";
 			break;
@@ -230,8 +246,10 @@ public class Parser {
 			break;
 
 		default:
-			syntaxError(String.format("Expected a CSS property name, found %s",
-					tok.getLexeme()), tok.getLine());
+			syntaxError(
+					String.format("Expected a CSS property name, found '%s'",
+							tok.getLexeme()),
+					tok.getLine());
 			break;
 		}
 
@@ -265,7 +283,7 @@ public class Parser {
 			break;
 
 		default:
-			syntaxError(String.format("Expected a CSS color value, found %s",
+			syntaxError(String.format("Expected a CSS color value, found '%s'",
 					tok.getLexeme()), tok.getLine());
 			break;
 		}
@@ -285,7 +303,7 @@ public class Parser {
 
 		default:
 			syntaxError(
-					String.format("Expected a CSS size value (px), found %s",
+					String.format("Expected a CSS size value (px), found '%s'",
 							tok.getLexeme()),
 					tok.getLine());
 			break;
@@ -314,7 +332,7 @@ public class Parser {
 
 		default:
 			syntaxError(
-					String.format("Expected a CSS alignment value, found %s",
+					String.format("Expected a CSS alignment value, found '%s'",
 							tok.getLexeme()),
 					tok.getLine());
 			break;
@@ -343,7 +361,7 @@ public class Parser {
 
 		default:
 			syntaxError(
-					String.format("Expected a CSS font-style value, found %s",
+					String.format("Expected a CSS font-style value, found '%s'",
 							tok.getLexeme()),
 					tok.getLine());
 			break;
@@ -352,10 +370,29 @@ public class Parser {
 		return fontStyle;
 	}
 
-	// Error management
-	void syntaxError(String e, int line) {
-		error = true;
-		System.out
-				.println(String.format("Syntax error: %s on line %d", e, line));
+	/* ERROR MANAGEMENT */
+
+	public boolean hasErrors() {
+		return this.syntaxError;
 	}
+
+	private void syntaxError(String message, int line) {
+		// Format error and add to error list
+		String error = String.format("Syntax error: %s on line %d.", message,
+				line);
+		errors.add(error);
+
+		this.syntaxError = true;
+	}
+
+	// Print all errors together on the err output stream
+	public void printErrors() {
+		if (this.syntaxError) {
+			System.err.println("\nErrors found running the parser:");
+			for (String error : errors) {
+				System.err.println("\t => " + error);
+			}
+		}
+	}
+
 }

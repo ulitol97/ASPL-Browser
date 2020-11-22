@@ -5,27 +5,29 @@ import simpleCss.ast.rule.Rule;
 import simpleCss.ast.stylesheet.Stylesheet;
 
 public class PrintCssAstVisitor implements Visitor {
-	String sp = "   ";
+	String separator = "   ";
 
 	@Override
 	public Object visit(Stylesheet css, Object param) {
-		String sd = "", sr;
+		String str = "";
+		String ret;
 		for (Declaration declaration : css.declarations) {
-			sd = sd + (String) declaration.accept(this, sp);
+			str = str + (String) declaration.accept(this, separator);
 		}
-		sr = "(CSS declarations\n" + sd + ")";
-		return sr;
+		ret = "(CSS declarations\n" + str + ")";
+		return ret;
 	}
 
 	@Override
 	public Object visit(Declaration declaration, Object param) {
-		String spar = "", sr;
+		String str = "";
+		String ret;
 		for (Rule rule : declaration.rules) {
-			spar = spar + (String) rule.accept(this, (String) param + sp);
+			str = str + (String) rule.accept(this, (String) param + separator);
 		}
-		sr = (String) param + "(" + declaration.selector + "\n" + spar
+		ret = (String) param + "(" + declaration.selector + "\n" + str
 				+ (String) param + ")\n";
-		return sr;
+		return ret;
 	}
 
 	@Override

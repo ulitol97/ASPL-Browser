@@ -7,19 +7,24 @@ import java.io.*;
 public class Lexicon {
 
 	// Token management
-	List<Token> tokens = new ArrayList<Token>();
-	int i = 0; // Last token retrieved in getToken()
+	private List<Token> tokens = new ArrayList<Token>();
+	private int currentToken = 0; // Last token retrieved in getToken()
+
 	// File read management
-	FileReader filereader;
-	boolean charBuffUsed = false;
-	char charBuff;
-	int line = 1; // line of the input file
+	private FileReader filereader;
+	private boolean charBuffUsed = false;
+	private char charBuff;
+	private int line = 1; // line of the input file
 
-	HashSet<Character> charText = new HashSet<Character>();
+	// Error management
+	private List<String> errors = new ArrayList<String>();
+	private boolean lexError = false;
 
-	public Lexicon(FileReader f) {
-		filereader = f;
-		// String lex;
+	/**
+	 * Main method. Automaton in charge of parsing tokens in the input file
+	 */
+	public Lexicon(FileReader filereader) {
+		this.filereader = filereader;
 		try {
 			char valor = (char) 0;
 			while (valor != (char) -1) {
@@ -38,19 +43,18 @@ public class Lexicon {
 				case ';':
 					tokens.add(new Token(TokensId.SEMICOLON, ";", line));
 					break;
-					
 
 				// New line
 				case '\n':
 					line++;
 
-				// White spaces and indentation: consume and break
+					// White spaces and indentation: consume and break
 				case '\r':
 				case '\t':
 				case ' ':
 				case (char) -1:
 					break;
-				
+
 				// Comments
 				case '/':
 					deleteComment();
@@ -69,12 +73,12 @@ public class Lexicon {
 					else if (Character.isAlphabetic(valor)) {
 						String ident = getText("" + valor);
 						switch (ident) {
-						
+
 						// Selectors
 						case "h1":
 							tokens.add(new Token(TokensId.H1, ident, line));
 							break;
-							
+
 						case "h2":
 							tokens.add(new Token(TokensId.H2, ident, line));
 							break;
@@ -82,22 +86,25 @@ public class Lexicon {
 						case "p":
 							tokens.add(new Token(TokensId.P, ident, line));
 							break;
-						
+
 						// Property keys
 						case "color":
 							tokens.add(new Token(TokensId.COLOR, ident, line));
 							break;
-							
+
 						case "font-size":
-							tokens.add(new Token(TokensId.FONTSIZE, ident, line));
+							tokens.add(
+									new Token(TokensId.FONTSIZE, ident, line));
 							break;
 
 						case "text-align":
-							tokens.add(new Token(TokensId.TEXTALIGN, ident, line));
+							tokens.add(
+									new Token(TokensId.TEXTALIGN, ident, line));
 							break;
 
 						case "font-style":
-							tokens.add(new Token(TokensId.FONTSTYLE, ident, line));
+							tokens.add(
+									new Token(TokensId.FONTSTYLE, ident, line));
 							break;
 
 						// Colors
@@ -116,7 +123,7 @@ public class Lexicon {
 						case "white":
 							tokens.add(new Token(TokensId.WHITE, ident, line));
 							break;
-							
+
 						// Alignments
 						case "left":
 							tokens.add(new Token(TokensId.LEFT, ident, line));
@@ -127,7 +134,7 @@ public class Lexicon {
 						case "center":
 							tokens.add(new Token(TokensId.CENTER, ident, line));
 							break;
-							
+
 						// Font styles
 						case "normal":
 							tokens.add(new Token(TokensId.NORMAL, ident, line));
@@ -138,16 +145,18 @@ public class Lexicon {
 						case "italic":
 							tokens.add(new Token(TokensId.ITALIC, ident, line));
 							break;
-						
+
 						default:
 							// ERROR: no matched tokens
-							lexicalError("Invalid token '" + ident + "' found in line " + line);
+							lexicalError("Invalid token '" + ident
+									+ "' found in line " + line);
 						}
 					} else
-						lexicalError("Character " + valor + " found in line " + line);
+						lexicalError("Character " + valor + " found in line "
+								+ line);
 				}
 			}
-			filereader.close();
+			this.filereader.close();
 		} catch (IOException e) {
 			System.out.println("Error E/S: " + e);
 		}
@@ -155,23 +164,23 @@ public class Lexicon {
 	}
 
 	/* SYNTAX OPERATIONS */
-	
+
 	// Return last token
 	public void returnLastToken() {
-		i--;
+		currentToken--;
 	}
 
 	// Get Token
 	public Token getToken() {
-		if (i < tokens.size()) {
-			return tokens.get(i++);
+		if (currentToken < tokens.size()) {
+			return tokens.get(currentToken++);
 		}
 		return new Token(TokensId.EOF, "EOF", line);
 	}
-	
+
 	// Reset lexicon to initial position
 	public void reset() {
-		this.i = 0;
+		this.currentToken = 0;
 	}
 
 	// Retrieves a token of type 'size', including the trailing 'px'
@@ -189,7 +198,9 @@ public class Lexicon {
 			if (valor == 'x') {
 				lexReturned = lexReturned + (valor);
 			} else {
-				lexicalError("Encontrado " + lexReturned + ". Se esperada un token SIZE.");
+				lexicalError(String.format(
+						"Invalid token '%s' on line %d . Expected token of type SIZE.",
+						lexReturned, line));
 				return null;
 			}
 		}
@@ -200,7 +211,8 @@ public class Lexicon {
 	String getText(String lexStart) throws IOException {
 		String lexReturned = lexStart;
 		char valor = nextChar();
-		while (Character.isDigit(valor) || Character.isAlphabetic(valor) || (valor == '-')) {
+		while (Character.isDigit(valor) || Character.isAlphabetic(valor)
+				|| (valor == '-')) {
 			lexReturned = lexReturned + (valor);
 			valor = nextChar();
 		}
@@ -210,25 +222,25 @@ public class Lexicon {
 
 	// Removes a comment enclosed between '/*' and '*/'
 	boolean deleteComment() throws IOException {
-		boolean r = false;
-		char c = nextChar();
-		if (c != '*')
+		boolean ret = false;
+		char nextChar = nextChar();
+		if (nextChar != '*')
 			return false;
 		do {
-			c = nextChar();
-			if (c == (char) -1) // Unexpected EOF
+			nextChar = nextChar();
+			if (nextChar == (char) -1) // Unexpected EOF
 				return false;
-			if (c == '\n') // Keep counting lines
+			if (nextChar == '\n') // Keep counting lines
 				line++;
-			if (c == '*') {
-				c = nextChar();
-				if (c == '/') {
-					r = true;
+			if (nextChar == '*') {
+				nextChar = nextChar();
+				if (nextChar == '/') {
+					ret = true;
 				}
 			}
-		} while (!r);
+		} while (!ret);
 
-		return r;
+		return ret;
 	}
 
 	// Returns the next character in the input file
@@ -247,9 +259,27 @@ public class Lexicon {
 		charBuffUsed = true;
 		charBuff = r;
 	}
+	
+	/* ERROR MANAGEMENT */
 
-	// Lexical error
-	void lexicalError(String e) {
-		System.out.println("Lexical error: " + e);
+	// Return whether if the lexicon found any errors or was executed correctly
+	public boolean hasErrors() {
+		return this.lexError;
+	}
+
+	// Lexical error: print the error and notify that errors occurred
+	void lexicalError(String error) {
+		errors.add(error);
+		this.lexError = true;
+	}
+
+	// Print all errors together on the err output stream
+	public void printErrors() {
+		if (this.lexError) {
+			System.err.println("\nErrors found running the lexicon:");
+			for (String error : errors) {
+				System.err.println("\t => " + error);
+			}
+		}
 	}
 }
