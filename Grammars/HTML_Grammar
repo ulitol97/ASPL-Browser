@@ -1,4 +1,4 @@
-document: (DOCTYPEUPPER|DOCTYPELOWER) html
+document: DOCTYPE html
 
 html: OPENHTML head body CLOSEHTML
 
@@ -36,8 +36,7 @@ underline: OPENUNDERLINE value CLOSEUNDERLINE
 
 // Léxico
 
-DOCTYPEUPPER: '!<DOCTYPE html>'
-DOCTYPELOWER: '!<doctype html>'
+DOCTYPE: '!<DOCTYPE html>'
 OPENHTML: '<html>'
 CLOSEHTML: '</html>'
 HREF: 'href'

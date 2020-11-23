@@ -5,6 +5,7 @@ import simpleCss.ast.rule.Rule;
 import simpleCss.ast.stylesheet.Stylesheet;
 
 public class PrintCssAstVisitor implements Visitor {
+
 	String separator = "   ";
 
 	@Override
@@ -34,5 +35,5 @@ public class PrintCssAstVisitor implements Visitor {
 	public Object visit(Rule rule, Object param) {
 		return (String) param + rule.key + " --> " + rule.value + "\n";
 	}
-
+	
 }

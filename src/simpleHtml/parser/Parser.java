@@ -1,27 +1,48 @@
 package simpleHtml.parser;
 
-import java.util.List;
-
 import simpleHtml.ast.*;
 import java.util.*;
 
 public class Parser {
-	
+
 	Lexicon lex;
-	
-	public Parser (Lexicon lex) {
+
+	// Error management
+	private List<String> errors = new ArrayList<String>();
+	private boolean syntaxError = false;
+
+	public Parser(Lexicon lex) {
 		this.lex = lex;
 	}
-	
-	public Ast parse () {
-		//...
+
+	public AstHtml parse() {
+		// ...
 		return ast;
 	}
-	
 
-	//Gestión de Errores Sintáctico
-	void errorSintactico (String e, int line) {
-		errorSint = true;
-		System.out.println("Error Sint�ctico : "+e+" en la l�nea "+line);
+	/* ERROR MANAGEMENT */
+
+	public boolean hasErrors() {
+		return this.syntaxError;
 	}
+
+	private void syntaxError(String message, int line) {
+		// Format error and add to error list
+		String error = String.format("Syntax error: %s on line %d.", message,
+				line);
+		errors.add(error);
+
+		this.syntaxError = true;
+	}
+
+	// Print all errors together on the err output stream
+	public void printErrors() {
+		if (this.syntaxError) {
+			System.err.println("\nErrors found running the parser:");
+			for (String error : errors) {
+				System.err.println("\t => " + error);
+			}
+		}
+	}
+
 }

@@ -1,181 +1,489 @@
 package simpleHtml.parser;
 
-import java.io.FileReader;
 import java.util.*;
 import java.io.*;
 
 public class Lexicon {
 
-	// Gestión de tokens
-	List<Token> tokens = new ArrayList<Token>();
-	int i = 0; //último token entregado en getToken()
-	//Gestión de lectura del fichero
-	FileReader filereader;
-	boolean charBuffUsed = false;
-	char charBuff;
-	int line = 1; // indica la l�nea del fichero fuente
-	
+	// Token management
+	private List<Token> tokens = new ArrayList<Token>();
+	private int currentToken = 0; // Last token retrieved in getToken()
+
+	// File read management
+	private FileReader filereader;
+	private boolean charBuffUsed = false;
+	private char charBuff;
+	private int line = 1;
+
+	// Error management
+	private List<String> errors = new ArrayList<String>();
+	private boolean lexError = false;
+
 	HashSet<Character> charText = new HashSet<Character>();
-	
-	public Lexicon (FileReader f) {
+
+	public Lexicon(FileReader filereader) {
 		/*
-		tokens.add(new Token(TokensId.HTML, "<html>"));
-		tokens.add(new Token(TokensId.HTMLCLOSE, "</html>"));
-		*/
-		filereader = f;
+		 * tokens.add(new Token(TokensId.HTML, "<html>")); tokens.add(new
+		 * Token(TokensId.HTMLCLOSE, "</html>"));
+		 */
+		this.filereader = filereader;
 		String lex;
 		loadSet();
-		try{
-			char valor=(char) 0;
-			while(valor!=(char) -1){
-				valor=nextChar();
-				switch ((char) valor) {
+		try {
+			char valor = (char) 0;
+			while (valor != (char) -1) {
+				valor = nextChar();
+				switch (valor) {
+				// Closing tags
 				case '<':
-					valor=nextChar();
+					valor = nextChar();
 					if ((char) valor == '/') {
-						valor=nextChar();
+						valor = nextChar();
 						switch ((char) valor) {
 						case 'h':
-							lex = getLexeme ("</h",'>');
+							lex = getLexeme("</h", '>');
 							if (lex.equals("</html>"))
-								tokens.add(new Token(TokensId.HTMLCLOSE, lex, line));
-							else if (lex.equals("</head>"))
-								tokens.add(new Token(TokensId.HEADC, lex, line));
+								tokens.add(new Token(TokensId.CLOSEHTML, lex,
+										line));
+
 							else if (lex.equals("</h1>"))
-								tokens.add(new Token(TokensId.H1C, lex, line));
+								tokens.add(
+										new Token(TokensId.CLOSEH1, lex, line));
+
 							else if (lex.equals("</h2>"))
-								tokens.add(new Token(TokensId.H2C, lex, line));
-							else
-								errorLexico(lex);
+								tokens.add(
+										new Token(TokensId.CLOSEH2, lex, line));
+
+							else if (lex.equals("</head>"))
+								tokens.add(new Token(TokensId.CLOSEHEAD, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
 							break;
-							// Resto de etiquetas de cierre
-							//...
+
+						case 'b':
+							lex = getLexeme("</b", '>');
+							if (lex.equals("</b>"))
+								tokens.add(new Token(TokensId.CLOSEBOLD, lex,
+										line));
+
+							else if (lex.equals("</body>"))
+								tokens.add(new Token(TokensId.CLOSEBODY, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 'p':
+							lex = getLexeme("</p", '>');
+							if (lex.equals("</p>"))
+								tokens.add(
+										new Token(TokensId.CLOSEP, lex, line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 't':
+							lex = getLexeme("</t", '>');
+							if (lex.equals("</title>"))
+								tokens.add(new Token(TokensId.CLOSETITLE, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 'i':
+							lex = getLexeme("</i", '>');
+							if (lex.equals("</i>"))
+								tokens.add(new Token(TokensId.CLOSEITALIC, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 'u':
+							lex = getLexeme("</u", '>');
+							if (lex.equals("</u>")) {
+								tokens.add(new Token(TokensId.CLOSEUNDERLINE,
+										lex, line));
+							}
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
 						default:
-							errorLexico(getLexeme("<"+valor, '>'));
+							lexicalError("Invalid string '"
+									+ getLexeme("<" + valor, '>')
+									+ "' found in line " + line);
 						}
-					}
-					else {
-						switch ((char) valor)  {
+					} else {
+						// Tag open '<'...
+						switch ((char) valor) {
+
 						case 'l':
-							lex = getLexeme ("<l",'k');
+							lex = getLexeme("<l", 'k');
 							if (lex.equals("<link"))
-								tokens.add(new Token(TokensId.LINK, lex, line));
-							else
-								errorLexico(lex);
+								tokens.add(new Token(TokensId.OPENLINK, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
 							break;
-							// Resto de etiquetas de apertura
-							//...
+
+						case 'h':
+							lex = getLexeme("<h", '>');
+							if (lex.equals("<html>"))
+								tokens.add(new Token(TokensId.OPENHTML, lex,
+										line));
+
+							else if (lex.equals("<h1>"))
+								tokens.add(
+										new Token(TokensId.OPENH1, lex, line));
+
+							else if (lex.equals("<h2>"))
+								tokens.add(
+										new Token(TokensId.OPENH2, lex, line));
+
+							else if (lex.equals("<head>"))
+								tokens.add(new Token(TokensId.OPENHEAD, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+							break;
+
+						case 'b':
+							lex = getLexeme("<b", '>');
+							if (lex.equals("<b>"))
+								tokens.add(new Token(TokensId.OPENBOLD, lex,
+										line));
+
+							else if (lex.equals("<body>"))
+								tokens.add(new Token(TokensId.OPENBODY, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 'p':
+							lex = getLexeme("<p", '>');
+							if (lex.equals("<p>"))
+								tokens.add(
+										new Token(TokensId.OPENP, lex, line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 't':
+							lex = getLexeme("<t", '>');
+							if (lex.equals("<title>"))
+								tokens.add(new Token(TokensId.OPENTITLE, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 'i':
+							lex = getLexeme("<i", '>');
+							if (lex.equals("<i>"))
+								tokens.add(new Token(TokensId.OPENITALIC, lex,
+										line));
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						case 'u':
+							lex = getLexeme("<u", '>');
+							if (lex.equals("<u>")) {
+								tokens.add(new Token(TokensId.OPENUNDERLINE,
+										lex, line));
+							}
+
+							else {
+								lexicalError("Invalid string '" + lex
+										+ "' found in line " + line);
+							}
+
+							break;
+
+						// Comments
+						case '!':
+							valor = nextChar();
+							if (valor != '-') {
+								lexicalError("Invalid string '" + valor
+										+ "' found after '<!' in line " + line);
+							}
+							valor = nextChar();
+							if (valor != '-') {
+								lexicalError("Invalid string '" + valor
+										+ "' found after '<!-' in line "
+										+ line);
+							}
+
+							// When we enter the comment, we already have <!--
+							deleteComment();
+							break;
+
 						default:
-							errorLexico(getLexeme("<"+valor, '>'));
-						
+							lexicalError("Invalid string '"
+									+ getLexeme("<" + valor, '>')
+									+ "' found in line " + line);
+
 						}
+
 					}
 					break;
+
+				// Rest of 1-length tokens:
 				case '>':
-						tokens.add(new Token(TokensId.CLOSE, new String(">"), line));
+					tokens.add(new Token(TokensId.TAGCLOSE, new String(">"),
+							line));
 					break;
-					// Resto de token de un solo caracter
-					//...
+
+				case '=':
+					tokens.add(new Token(TokensId.EQ, new String(">"), line));
+					break;
+
+				case '"':
+					tokens.add(
+							new Token(TokensId.QUOTE, new String(">"), line));
+					break;
+
+				case '/':
+					tokens.add(new Token(TokensId.BAR, new String(">"), line));
+					break;
+
+				// Other
 				case '\n':
 					line++;
+
+					// White spaces and indentation: consume and break
 				case '\r':
 				case ' ':
 				case '\t':
-				case (char)-1:
-					//Eliminar todos los espacios TokensId.WS
+				case (char) -1:
 					break;
+
+				// n-length tokens
 				default:
-					//Texto
-					lex = getLexemeTEXT(new String(""+(char)valor));
-					tokens.add(new Token(TokensId.TEXT, lex, line));
+					lex = getLexemeTEXT(new String("" + (char) valor));
+					// Search for rel, href, type
+					switch (lex) {
+					// CSS attributes
+					case "href":
+						tokens.add(new Token(TokensId.HREF, lex, line));
+						break;
+
+					case "rel":
+						tokens.add(new Token(TokensId.REL, lex, line));
+						break;
+
+					case "type":
+						tokens.add(new Token(TokensId.TYPE, lex, line));
+						break;
+
+					// Any non-recognized text will fall under the TEXT token
+					default:
+						tokens.add(new Token(TokensId.TEXT, lex, line));
+						break;
+					}
+
 					break;
 				}
-				//System.out.print((char)valor);
 			}
-			filereader.close();
-        }catch(IOException e){
-            System.out.println("Error E/S: "+e);
-        }
-		
+			this.filereader.close();
+		} catch (IOException e) {
+			System.out.println("Error E/S: " + e);
+		}
+
 	}
-	
+
 	// ++
 	// ++ Operaciones para el Sintactico
 	// ++
 	// Devolver el último token
-	public void returnLastToken () {
-		i--;
+	public void returnLastToken() {
+		currentToken--;
 	}
-	
+
 	// Get Token
-	public Token getToken () {
-		if (i < tokens.size()) {
-			return tokens.get(i++);
+	public Token getToken() {
+		if (currentToken < tokens.size()) {
+			return tokens.get(currentToken++);
 		}
-		return new Token (TokensId.EOF,"EOF", line);
-	}	
+		return new Token(TokensId.EOF, "EOF", line);
+	}
+
+	// Reset lexicon to initial position
+	public void reset() {
+		this.currentToken = 0;
+	}
+
 	// ++
 	// ++ Operaciones para el Sintactico
 	// ++
 
-	//Privadas
-	
-	// Dado el inicio de una cadena y el caracter final, devuelve el lexema correspondiente
-	String getLexeme (String lexStart, char finChar) throws IOException {
+	// Privadas
+
+	// Dado el inicio de una cadena y el caracter final, devuelve el lexema
+	// correspondiente
+	String getLexeme(String lexStart, char finChar) throws IOException {
 		String lexReturned = lexStart;
 		char valor;
 		do {
-			valor=nextChar();
-			lexReturned = lexReturned+((char) valor);
+			valor = nextChar();
+			lexReturned = lexReturned + ((char) valor);
 		} while (((char) valor != finChar) && ((char) valor != -1));
-		//returnChar(valor);
+		// returnChar(valor);
 		return lexReturned;
 	}
-	
+
 	// Devuelve un lexema de texto, el caracter final es un espacio
-	String getLexemeTEXT (String lexStart) throws IOException {
+	String getLexemeTEXT(String lexStart) throws IOException {
 		String lexReturned = lexStart;
 		char valor = nextChar();
 		while (charText.contains(((char) valor)) && ((char) valor != -1)) {
-			lexReturned = lexReturned+((char) valor);
-			valor=nextChar();
+			lexReturned = lexReturned + ((char) valor);
+			valor = nextChar();
 		}
 		returnChar(valor);
 		return lexReturned;
 	}
-	
-	// Carga el conjunto de caracteres adminidos pro el analizador léxico
-	void loadSet () {
+
+	// Load the set of characters admitted by the lexical analyzer
+	void loadSet() {
 		String s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:+-*/()[]!?";
-		int i=0;
-		Character a = new Character('a');
+		int i = 0;
+		Character a = Character.valueOf('a');
 		while (i < s.length()) {
 			a = s.charAt(i);
 			charText.add(a);
 			i++;
 		}
-		//System.out.println(charText);
+		// System.out.println(charText);
 	}
-	
-	// Devuelde el siguiente caracter de fuente
-	char nextChar() throws IOException{
+
+	// TODO
+	// Removes a comment enclosed between '<!--' and '-->' // /* */
+	boolean deleteComment() throws IOException {
+		boolean ret = false;
+		char nextChar;
+
+//		char nextChar = nextChar();
+//		if (nextChar != '-')
+//			return false;
+//
+//		nextChar = nextChar();
+//		if (nextChar != '-')
+//			return false;
+
+		do {
+			nextChar = nextChar();
+			if (nextChar == (char) -1) // Unexpected EOF
+				return false;
+			if (nextChar == '\n') // Keep counting lines
+				line++;
+			if (nextChar == '-') {
+				nextChar = nextChar();
+				if (nextChar == '-') {
+					nextChar = nextChar();
+
+					// In case comments end like '--------->'
+					while (nextChar == '-') {
+						nextChar = nextChar();
+					}
+					
+					if (nextChar == '>') {
+						ret = true;
+					}
+				}
+			}
+		} while (!ret);
+
+		return ret;
+	}
+
+	// Returns the next character in the input file
+	char nextChar() throws IOException {
 		if (charBuffUsed) {
 			charBuffUsed = false;
 			return charBuff;
 		} else {
-		int valor=filereader.read();
-		return ((char) valor);
+			int valor = filereader.read();
+			return ((char) valor);
 		}
 	}
-	
-	// Devuelve un caracger que se ha leído pero no se ha consumido al buffer
-	void returnChar (char r) {
+
+	// Returns 1 character to the buffer if it was read and not consumed
+	void returnChar(char r) {
 		charBuffUsed = true;
 		charBuff = r;
 	}
 
-	// Emite error léxico
-	void errorLexico (String e) {
-		System.out.println("Error l�xico en : "+e);
+	/* ERROR MANAGEMENT */
+
+	// Return whether if the lexicon found any errors or was executed correctly
+	public boolean hasErrors() {
+		return this.lexError;
+	}
+
+	// Lexical error: notify that errors occurred
+	void lexicalError(String error) {
+		errors.add(error);
+		this.lexError = true;
+	}
+
+	// Print all errors together on the err output stream
+	public void printErrors() {
+		if (this.lexError) {
+			System.err.println("\nErrors found running the lexicon:");
+			for (String error : errors) {
+				System.err.println("\t => " + error);
+			}
+		}
 	}
 }

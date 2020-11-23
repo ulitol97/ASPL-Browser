@@ -1,19 +1,15 @@
-package simpleCss.main;
+package simpleHtml.main;
 
 import java.io.FileReader;
 
-import simpleCss.ast.AstCss;
-import simpleCss.parser.Lexicon;
-import simpleCss.parser.Parser;
-import simpleCss.parser.Token;
-import simpleCss.parser.TokensId;
-import simpleCss.visitor.PrintCssAstVisitor;
-import simpleCss.visitor.SearchParamInCssVisitor;
+import simpleHtml.parser.Lexicon;
+import simpleHtml.parser.Token;
+import simpleHtml.parser.TokensId;
 
 public class Main {
 
 	public static String separator = "\n------------------------\n";
-	public static String defaultFile = "EX1.css";
+	public static String defaultFile = "EX4.html";
 
 	public static void main(String[] args) {
 
@@ -28,26 +24,26 @@ public class Main {
 		System.out.println(separator);
 
 		// Parser
-		System.out.println("SYNTAX\n");
-		AstCss ast = runParser(lex);
-		System.out.println("\nEND SYNTAX\n");
-
-		System.out.println(separator);
+//		System.out.println("SYNTAX\n");
+//		AstCss ast = runParser(lex);
+//		System.out.println("\nEND SYNTAX\n");
+//
+//		System.out.println(separator);
 
 		// VISITORS
 
 		// Print Visitor
-		System.out.println("\nPRINT VISITOR\n");
-		runPrintVisitor(ast);
-		System.out.println("\nEND PRINT VISITOR\n");
+//		System.out.println("\nPRINT VISITOR\n");
+//		runPrintVisitor(ast);
+//		System.out.println("\nEND PRINT VISITOR\n");
 
 		// Search Visitor
-		System.out.println("\nSEARCH VISITOR\n");
-		SearchParamInCssVisitor searchVisitor = new SearchParamInCssVisitor();
-		String h1Color = searchVisitor.search("h1", "color", ast);
-		System.out.println(h1Color);
-		
-		System.out.println("\nEND SEARCH VISITOR\n");
+//		System.out.println("\nSEARCH VISITOR\n");
+//		SearchParamInCssVisitor searchVisitor = new SearchParamInCssVisitor();
+//		String h1Color = searchVisitor.search("h1", "color", ast);
+//		System.out.println(h1Color);
+//
+//		System.out.println("\nEND SEARCH VISITOR\n");
 	}
 
 	static FileReader readInput(String[] args) {
@@ -88,27 +84,27 @@ public class Main {
 
 	}
 
-	static AstCss runParser(Lexicon lex) {
-		lex.reset();
-		Parser parser = new Parser(lex);
-		AstCss ast = parser.parse();
-
-		// If lexer failed, do not launch parser
-		if (parser.hasErrors()) {
-			parser.printErrors();
-			System.exit(-2);
-			return null;
-		} else
-			return ast;
-	}
-
-	static void runPrintVisitor(AstCss ast) {
-		if (ast != null) {
-			PrintCssAstVisitor printVisitor = new PrintCssAstVisitor();
-			System.out.println(ast.accept(printVisitor, null));
-		} else
-			System.err.println("PRINT VISITOR: AST has not been generated.");
-	}
+//	static AstCss runParser(Lexicon lex) {
+//		lex.reset();
+//		Parser parser = new Parser(lex);
+//		AstCss ast = parser.parse();
+//
+//		// If lexer failed, do not launch parser
+//		if (parser.hasErrors()) {
+//			parser.printErrors();
+//			System.exit(-2);
+//			return null;
+//		} else
+//			return ast;
+//	}
+//
+//	static void runPrintVisitor(AstCss ast) {
+//		if (ast != null) {
+//			PrintCssAstVisitor printVisitor = new PrintCssAstVisitor();
+//			System.out.println(ast.accept(printVisitor, null));
+//		} else
+//			System.err.println("PRINT VISITOR: AST has not been generated.");
+//	}
 
 	/* AUX */
 

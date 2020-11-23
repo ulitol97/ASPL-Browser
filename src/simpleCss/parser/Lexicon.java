@@ -259,7 +259,7 @@ public class Lexicon {
 		charBuffUsed = true;
 		charBuff = r;
 	}
-	
+
 	/* ERROR MANAGEMENT */
 
 	// Return whether if the lexicon found any errors or was executed correctly
@@ -267,7 +267,7 @@ public class Lexicon {
 		return this.lexError;
 	}
 
-	// Lexical error: print the error and notify that errors occurred
+	// Lexical error: notify that errors occurred
 	void lexicalError(String error) {
 		errors.add(error);
 		this.lexError = true;
