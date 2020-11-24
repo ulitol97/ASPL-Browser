@@ -2,13 +2,17 @@ document: DOCTYPE html
 
 html: OPENHTML head body CLOSEHTML
 
-head: OPENHEAD title link? CLOSEHEAD
+head: OPENHEAD title link* CLOSEHEAD
 
-title: OPENTITLE text+ CLOSETITLE
+title: OPENTITLE text CLOSETITLE
 
-link: OPENLINK linkAttribute CLOSELINK
+link: OPENLINK href rel type CLOSELINK
 
-linkAttribute: HREF EQ QUOTE text QUOTE
+href: HREF EQ QUOTE text QUOTE
+
+rel: REL EQ QUOTE text QUOTE
+
+type: TYPE EQ QUOTE text QUOTE
 
 body: OPENBODY element* CLOSEBODY
 
@@ -20,13 +24,13 @@ header2: OPENH2 value CLOSEH2
 
 paragraph: OPENP value CLOSEP
 
-value: text* inner* text*
+value: (text | styledText)*
 
-text: word*
+text: word* // Podría ser [a-zA-Z0-9.,;]*   ?
 
-word: [a-zA-Z0-9.,;]+
+word: [a-zA-Z0-9.,;]+ // Es necesario?
 
-inner: bold | italic | underline
+styledText: bold | italic | underline
 
 bold: OPENBOLD value CLOSEBOLD
 

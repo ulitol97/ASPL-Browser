@@ -2,7 +2,9 @@ package simpleHtml.main;
 
 import java.io.FileReader;
 
+import simpleHtml.ast.AstHtml;
 import simpleHtml.parser.Lexicon;
+import simpleHtml.parser.Parser;
 import simpleHtml.parser.Token;
 import simpleHtml.parser.TokensId;
 
@@ -24,11 +26,11 @@ public class Main {
 		System.out.println(separator);
 
 		// Parser
-//		System.out.println("SYNTAX\n");
-//		AstCss ast = runParser(lex);
-//		System.out.println("\nEND SYNTAX\n");
-//
-//		System.out.println(separator);
+		System.out.println("SYNTAX\n");
+		AstHtml ast = runParser(lex);
+		System.out.println("\nEND SYNTAX\n");
+
+		System.out.println(separator);
 
 		// VISITORS
 
@@ -84,19 +86,19 @@ public class Main {
 
 	}
 
-//	static AstCss runParser(Lexicon lex) {
-//		lex.reset();
-//		Parser parser = new Parser(lex);
-//		AstCss ast = parser.parse();
-//
-//		// If lexer failed, do not launch parser
-//		if (parser.hasErrors()) {
-//			parser.printErrors();
-//			System.exit(-2);
-//			return null;
-//		} else
-//			return ast;
-//	}
+	static AstHtml runParser(Lexicon lex) {
+		lex.reset();
+		Parser parser = new Parser(lex);
+		AstHtml ast = parser.parse();
+
+		// If parser failed, do not proceed further
+		if (parser.hasErrors()) {
+			parser.printErrors();
+			System.exit(-2);
+			return null;
+		} else
+			return ast;
+	}
 //
 //	static void runPrintVisitor(AstCss ast) {
 //		if (ast != null) {

@@ -93,7 +93,7 @@ public class Main {
 		Parser parser = new Parser(lex);
 		AstCss ast = parser.parse();
 
-		// If lexer failed, do not launch parser
+		// If parser failed, do not proceed further
 		if (parser.hasErrors()) {
 			parser.printErrors();
 			System.exit(-2);

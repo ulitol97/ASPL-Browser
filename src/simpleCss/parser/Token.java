@@ -2,9 +2,9 @@ package simpleCss.parser;
 
 
 public class Token {
-	TokensId token;
-	String lexeme;
-	int line;
+	private TokensId token;
+	private String lexeme;
+	private int line;
 	
 	public Token (TokensId token, String lexeme, int line) {
 		this.token = token;

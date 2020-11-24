@@ -27,6 +27,9 @@ public class Parser {
 	private Stylesheet stylesheet() {
 
 		List<Declaration> declarations = declarations();
+		
+		if (syntaxError)
+			return null;
 		return new Stylesheet(declarations);
 	}
 

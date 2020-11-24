@@ -1,23 +1,21 @@
 package simpleHtml.ast.head;
 
-import java.util.List;
-
 import simpleHtml.ast.AstHtml;
+import simpleHtml.ast.body.element.sentence.Text;
 import simpleHtml.visitor.Visitor;
 
-public class Head implements AstHtml {
-	
-	public Title title;
-	public List<Link> links;
+public class Title implements AstHtml {
 
-	public Head(Title title, List<Link> links) {
+	public Text title;
+
+	public Title(Text title) {
 		this.title = title;
-		this.links = links;
 	}
-
+	
 	@Override
 	public Object accept(Visitor v, Object param) {
 		return v.visit(this, param);
 	}
+
 
 }
