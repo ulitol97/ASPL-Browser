@@ -404,7 +404,6 @@ public class Lexicon {
 			charText.add(a);
 			i++;
 		}
-		// System.out.println(charText);
 	}
 
 	// TODO

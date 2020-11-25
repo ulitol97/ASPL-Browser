@@ -7,6 +7,7 @@ import simpleHtml.parser.Lexicon;
 import simpleHtml.parser.Parser;
 import simpleHtml.parser.Token;
 import simpleHtml.parser.TokensId;
+import simpleHtml.visitor.PrintHtmlAstVisitor;
 
 public class Main {
 
@@ -35,9 +36,9 @@ public class Main {
 		// VISITORS
 
 		// Print Visitor
-//		System.out.println("\nPRINT VISITOR\n");
-//		runPrintVisitor(ast);
-//		System.out.println("\nEND PRINT VISITOR\n");
+		System.out.println("\nPRINT VISITOR\n");
+		runPrintVisitor(ast);
+		System.out.println("\nEND PRINT VISITOR\n");
 
 		// Search Visitor
 //		System.out.println("\nSEARCH VISITOR\n");
@@ -99,14 +100,14 @@ public class Main {
 		} else
 			return ast;
 	}
-//
-//	static void runPrintVisitor(AstCss ast) {
-//		if (ast != null) {
-//			PrintCssAstVisitor printVisitor = new PrintCssAstVisitor();
-//			System.out.println(ast.accept(printVisitor, null));
-//		} else
-//			System.err.println("PRINT VISITOR: AST has not been generated.");
-//	}
+
+	static void runPrintVisitor(AstHtml ast) {
+		if (ast != null) {
+			PrintHtmlAstVisitor printVisitor = new PrintHtmlAstVisitor();
+			System.out.println(ast.accept(printVisitor, null));
+		} else
+			System.err.println("PRINT VISITOR: AST has not been generated.");
+	}
 
 	/* AUX */
 

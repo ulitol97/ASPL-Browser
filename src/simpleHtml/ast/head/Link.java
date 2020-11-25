@@ -8,12 +8,12 @@ public class Link implements AstHtml {
 
 	public Text href;
 	public Text rel;
-	public Text style;
+	public Text type;
 
 	public Link(Text href, Text rel, Text style) {
 		this.href = href;
 		this.rel = rel;
-		this.style = style;
+		this.type = style;
 	}
 
 	@Override

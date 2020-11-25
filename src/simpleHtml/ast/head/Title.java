@@ -1,14 +1,16 @@
 package simpleHtml.ast.head;
 
+import java.util.List;
+
 import simpleHtml.ast.AstHtml;
 import simpleHtml.ast.body.element.sentence.Text;
 import simpleHtml.visitor.Visitor;
 
 public class Title implements AstHtml {
 
-	public Text title;
+	public List<Text> title;
 
-	public Title(Text title) {
+	public Title(List<Text> title) {
 		this.title = title;
 	}
 	

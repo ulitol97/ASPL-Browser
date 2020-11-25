@@ -1,18 +1,24 @@
 package simpleHtml.ast.body.element.sentence;
 
+import java.util.List;
+
 import simpleHtml.visitor.Visitor;
 
 public class Italic implements Sentence {
 
-	public Text text;
+	public List<Text> text;
 
-	public Italic(Text text) {
+	public Italic(List<Text> text) {
 		this.text = text;
 	}
 	
 	@Override
 	public String getContent() {
-		return text.text;
+		String str = "";
+		for (Text t : text) {
+			str += t + " ";
+		}
+		return str;
 	}
 
 	@Override

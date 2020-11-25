@@ -104,7 +104,7 @@ public class Parser {
 		}
 
 		// Look for title text
-		Text titleText = text();
+		List<Text> titleText = texts();
 
 		// Expect </title>
 		tok = lex.getToken();
@@ -144,7 +144,8 @@ public class Parser {
 
 		if (syntaxError)
 			return null;
-		return null;
+		
+		return links;
 	}
 
 	private Link link() {
@@ -348,7 +349,7 @@ public class Parser {
 		Element element = element();
 
 		while (element != null) {
-			lex.returnLastToken();
+//			lex.returnLastToken();
 			elements.add(element);
 			element = element();
 
@@ -384,9 +385,10 @@ public class Parser {
 
 		default:
 			// No element matched
-			syntaxError(String.format(
-					"Expected an element tag '<{element}>' inside 'body', found '%s'",
-					tok.getLexeme()), tok.getLine());
+//			syntaxError(String.format(
+//					"Expected an element tag '<{element}>' inside 'body', found '%s'",
+//					tok.getLexeme()), tok.getLine());
+			element = null;
 			break;
 		}
 
@@ -405,6 +407,7 @@ public class Parser {
 
 		List<Sentence> sentences = sentences(tok);
 
+		tok = lex.getToken();
 		// Expect '</h1>'
 		if (tok.getToken() != TokensId.CLOSEH1) {
 			syntaxError(String.format(
@@ -430,6 +433,7 @@ public class Parser {
 
 		List<Sentence> sentences = sentences(tok);
 
+		tok = lex.getToken();
 		// Expect '</h2>'
 		if (tok.getToken() != TokensId.CLOSEH2) {
 			syntaxError(String.format(
@@ -455,6 +459,7 @@ public class Parser {
 
 		List<Sentence> sentences = sentences(tok);
 
+		tok = lex.getToken();
 		// Expect '</p>'
 		if (tok.getToken() != TokensId.CLOSEP) {
 			syntaxError(String.format(
@@ -474,13 +479,9 @@ public class Parser {
 		Sentence sentence = sentence(predecessor);
 
 		while (sentence != null) {
-			lex.returnLastToken();
 			sentences.add(sentence);
-			System.err.println(sentence.getContent());
-
 			sentence = sentence(predecessor);
 		}
-
 		// We consumed an extra token to check for more sentences
 		lex.returnLastToken();
 
@@ -517,9 +518,10 @@ public class Parser {
 
 		default:
 			// No element matched
-			syntaxError(String.format(
-					"Expected formatted or raw text inside '%s', found '%s'",
-					predecessor.getLexeme(), tok.getLexeme()), tok.getLine());
+//			syntaxError(String.format(
+//					"Expected formatted or raw text inside '%s', found '%s'",
+//					predecessor.getLexeme(), tok.getLexeme()), tok.getLine());
+			sentence = null;
 			break;
 		}
 
@@ -534,7 +536,7 @@ public class Parser {
 
 		Bold bold = null;
 
-		Text text = null;
+		List<Text> texts = null;
 		Token tok = lex.getToken();
 
 		// Expect '<b>' (we know it is OK)
@@ -544,8 +546,9 @@ public class Parser {
 		}
 
 		// Expect inner text
-		text = text();
+		texts = texts();
 
+		tok = lex.getToken();
 		// Expect '</b>'
 		if (tok.getToken() != TokensId.CLOSEBOLD) {
 			syntaxError(
@@ -557,8 +560,8 @@ public class Parser {
 		if (syntaxError)
 			return null;
 
-		if (text != null)
-			bold = new Bold(text);
+		if (texts != null)
+			bold = new Bold(texts);
 
 		return bold;
 	}
@@ -567,7 +570,7 @@ public class Parser {
 
 		Italic italic = null;
 
-		Text text = null;
+		List<Text> texts = null;
 		Token tok = lex.getToken();
 
 		// Expect '<i>' (we know it is OK)
@@ -577,8 +580,9 @@ public class Parser {
 		}
 
 		// Expect inner text
-		text = text();
+		texts = texts();
 
+		tok = lex.getToken();
 		// Expect '</i>'
 		if (tok.getToken() != TokensId.CLOSEITALIC) {
 			syntaxError(
@@ -590,8 +594,8 @@ public class Parser {
 		if (syntaxError)
 			return null;
 
-		if (text != null)
-			italic = new Italic(text);
+		if (texts != null)
+			italic = new Italic(texts);
 
 		return italic;
 	}
@@ -600,7 +604,7 @@ public class Parser {
 
 		Underline underline = null;
 
-		Text text = null;
+		List<Text> texts = null;
 		Token tok = lex.getToken();
 
 		// Expect '<b>' (we know it is OK)
@@ -610,8 +614,9 @@ public class Parser {
 		}
 
 		// Expect inner text
-		text = text();
+		texts = texts();
 
+		tok = lex.getToken();
 		// Expect '</b>'
 		if (tok.getToken() != TokensId.CLOSEUNDERLINE) {
 			syntaxError(
@@ -623,10 +628,31 @@ public class Parser {
 		if (syntaxError)
 			return null;
 
-		if (text != null)
-			underline = new Underline(text);
+		if (texts != null)
+			underline = new Underline(texts);
 
 		return underline;
+	}
+
+	private List<Text> texts() {
+
+		List<Text> texts = new ArrayList<Text>();
+		Text text = text();
+
+		while (text != null) {
+			texts.add(text);
+
+			text = text();
+		}
+
+		// We consumed an extra token to check for more texts
+		lex.returnLastToken();
+
+		if (syntaxError)
+			return null;
+
+		return texts;
+
 	}
 
 	private Text text() {
@@ -634,14 +660,13 @@ public class Parser {
 		String text = "";
 		Token tok = lex.getToken();
 
-		// While the next token is a text, append to the text string
-		while (tok.getToken() == TokensId.TEXT) {
-			text += " " + tok.getLexeme();
-			tok = lex.getToken();
-		}
-
-		// We consumed an extra token to check for more text
-		lex.returnLastToken();
+		// Expect raw text
+		if (tok.getToken() != TokensId.TEXT) {
+//			syntaxError(String.format("Expected some text, found '%s'",
+//					tok.getLexeme()), tok.getLine());
+			return null;
+		} else
+			text = tok.getLexeme();
 
 		if (syntaxError)
 			return null;
