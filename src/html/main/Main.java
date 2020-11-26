@@ -1,9 +1,7 @@
 package html.main;
 
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import html.ast.AstHtml;
@@ -122,8 +120,9 @@ public class Main {
 	static Set<String> runFindCssVisitor(AstHtml ast) {
 		if (ast != null) {
 			FindCssAstVisitor findCssVisitor = new FindCssAstVisitor();
+
+			@SuppressWarnings("unchecked")
 			Set<String> styles = (Set<String>) ast.accept(findCssVisitor, null);
-			System.out.println(styles);
 			return styles;
 		}
 
