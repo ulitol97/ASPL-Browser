@@ -18,7 +18,7 @@ import render.paint.IPrintPage;
 import render.paint.PrintPageTxt;
 import render.visitor.RenderVisitor;
 
-public class Main {
+public class Main_NoGUI {
 
 	public static String htmlFile = "EX4.html";
 	public static String defaultCssFile = "Default.css";
