@@ -8,7 +8,6 @@ public class FormattedText implements FormattedElement {
 	public String color;
 	public int fontSize;
 	public String fontStyle;
-	public int metrics;
 
 	public FormattedText() {
 	};

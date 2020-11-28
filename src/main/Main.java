@@ -2,6 +2,7 @@ package main;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +51,7 @@ public class Main {
 				.accept(renderVisitor, null);
 
 		// Print page
-		renderPageText(formattedPage);
+		renderPageText(formattedPage, System.out);
 
 	}
 
@@ -94,7 +95,8 @@ public class Main {
 		return new HashSet<String>();
 	}
 
-	private static void renderPageText(FormattedPage formattedPage) {
+	private static void renderPageText(FormattedPage formattedPage,
+			PrintStream printStream) {
 
 		if (formattedPage == null) {
 			System.err.println(
@@ -103,7 +105,7 @@ public class Main {
 		}
 
 		IPrintPage printer = new PrintPageTxt();
-		printer.printPage(formattedPage);
+		printer.printPage(formattedPage, printStream);
 
 	}
 

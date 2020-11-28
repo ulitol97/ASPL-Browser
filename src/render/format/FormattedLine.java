@@ -8,7 +8,7 @@ import render.visitor.Visitor;
 public class FormattedLine implements FormattedElement {
 
 	private String textAlign;
-	public List<FormattedText> contents;
+	private List<FormattedText> contents;
 
 	public FormattedLine() {
 		contents = new ArrayList<FormattedText>();
@@ -25,6 +25,11 @@ public class FormattedLine implements FormattedElement {
 			acc += formattedText.getMetrics();
 		}
 		return acc;
+	}
+	
+
+	public List<FormattedText> getContents() {
+		return contents;
 	}
 
 	public void add(FormattedText text) {

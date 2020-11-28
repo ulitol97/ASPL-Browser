@@ -22,6 +22,10 @@ public class FormattedPage implements FormattedElement {
 		this.lines.add(line);
 	}
 	
+	public List<FormattedLine> getLines() {
+		return this.lines;
+	}
+	
 	public String getTitle() {
 		return this.title;
 	}

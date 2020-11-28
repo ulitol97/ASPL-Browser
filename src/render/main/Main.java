@@ -10,7 +10,7 @@ public class Main {
 	public static void main(String[] args) {
 		FormattedPage formattedPage = createPage();
 		IPrintPage printer = new PrintPageTxt();
-		printer.printPage(formattedPage);
+		printer.printPage(formattedPage, System.out);
 	}
 
 	static FormattedPage createPage() {
