@@ -45,8 +45,10 @@ public class Main {
 		System.out.println("\nSEARCH VISITOR\n");
 		SearchParamInCssVisitor searchVisitor = new SearchParamInCssVisitor();
 		String h1Color = searchVisitor.search("h1", "color", ast);
+		String h1Size = searchVisitor.search("h1", "font-size", ast);
 		System.out.println(h1Color);
-		
+		System.out.println(h1Size);
+
 		System.out.println("\nEND SEARCH VISITOR\n");
 	}
 

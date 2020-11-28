@@ -6,7 +6,7 @@ public class PrintPageTxt implements IPrintPage {
 
 	@Override
 	public void printPage(FormattedPage formattedPage) {
-		// TODO Auto-generated method stub
+		System.err.print("GJ");
 		
 	}
 
@@ -18,7 +18,7 @@ public class PrintPageTxt implements IPrintPage {
 		(Line align : center | Metrics : 192.0 >>
 		(Format : black, 32.0, italic | Metrics : 192.0 >> Titulo)
 		)
-		
+		bold
 		(Line align : left | Metrics : 162.0 >>
 		(Format : blue, 18.0, italic | Metrics : 162.0 >> Ejemplo 1)
 		)

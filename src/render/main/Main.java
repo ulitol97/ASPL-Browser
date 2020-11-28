@@ -28,14 +28,14 @@ public class Main {
 
 	static FormattedLine createLine1() {
 		FormattedLine line = new FormattedLine("center");
-		FormattedText text = new FormattedText("Titulo", "black", 32, "normal");
+		FormattedText text = new FormattedText("Titulo", "black", "32px", "normal");
 		line.add(text);
 		return line;
 	}
 
 	static FormattedLine createLine2() {
 		FormattedLine line = new FormattedLine("left");
-		FormattedText text = new FormattedText("Ejemplo 1", "blue", 18, "italic");
+		FormattedText text = new FormattedText("Ejemplo 1", "blue", "18px", "italic");
 		line.add(text);
 		return line;
 	}
@@ -43,26 +43,26 @@ public class Main {
 	static FormattedLine createLine3() {
 		FormattedLine line = new FormattedLine("left");
 		FormattedText text = new FormattedText("Un parrafo de texto.", "green",
-				12, "normal");
+				"12px", "normal");
 		line.add(text);
 		return line;
 	}
 
 	static FormattedLine createLine4() {
 		FormattedLine line = new FormattedLine("left");
-		FormattedText text = new FormattedText("Esto ", "green", 12, "normal");
+		FormattedText text = new FormattedText("Esto ", "green", "12px", "normal");
 		line.add(text);
-		text = new FormattedText("prueba  ", "green", 12, "bold");
+		text = new FormattedText("prueba  ", "green", "12px", "bold");
 		line.add(text);
-		text = new FormattedText("las ", "green", 12, "normal");
+		text = new FormattedText("las ", "green", "12px", "normal");
 		line.add(text);
-		text = new FormattedText("etiquetas ", "green", 12, "italic");
+		text = new FormattedText("etiquetas ", "green", "12px", "italic");
 		line.add(text);
-		text = new FormattedText("de ", "green", 12, "normal");
+		text = new FormattedText("de ", "green", "12px", "normal");
 		line.add(text);
-		text = new FormattedText("formato ", "green", 12, "underlined");
+		text = new FormattedText("formato ", "green", "12px", "underlined");
 		line.add(text);
-		text = new FormattedText("html ", "green", 12, "normal");
+		text = new FormattedText("html ", "green", "12px", "normal");
 		line.add(text);
 		return line;
 	}

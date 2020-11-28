@@ -13,6 +13,8 @@ import css.main.AstCreatorHTML;
 import html.ast.AstHtml;
 import html.visitor.FindCssAstVisitor;
 import render.format.FormattedPage;
+import render.paint.IPrintPage;
+import render.paint.PrintPageTxt;
 import render.visitor.RenderVisitor;
 
 public class Main {
@@ -42,10 +44,13 @@ public class Main {
 			styles.add(AstCreatorCSS.generateAst(fileReader, css));
 		}
 
-		// Render page
+		// Render / Create formatted page
 		RenderVisitor renderVisitor = new RenderVisitor(astHtml, styles);
 		FormattedPage formattedPage = (FormattedPage) astHtml
 				.accept(renderVisitor, null);
+
+		// Print page
+		renderPageText(formattedPage);
 
 	}
 
@@ -87,6 +92,19 @@ public class Main {
 
 		System.err.println("FIND CSS VISITOR: AST has not been generated.");
 		return new HashSet<String>();
+	}
+
+	private static void renderPageText(FormattedPage formattedPage) {
+
+		if (formattedPage == null) {
+			System.err.println(
+					"RENDER PAGE TEXT: The formatted page could not be generated");
+			return;
+		}
+
+		IPrintPage printer = new PrintPageTxt();
+		printer.printPage(formattedPage);
+
 	}
 
 }
