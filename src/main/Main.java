@@ -4,7 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +21,7 @@ import render.visitor.RenderVisitor;
 public class Main {
 
 	public static String htmlFile = "EX4.html";
-	public static String cssFile = "Default.css";
+	public static String defaultCssFile = "Default.css";
 
 	public static void main(String[] args) {
 
@@ -34,8 +34,10 @@ public class Main {
 		// Find associated CSS
 		List<AstCss> styles = new ArrayList<AstCss>();
 		Set<String> foundStyles = runFindCssVisitor(astHtml);
-		// Add default CSS
-		foundStyles.add(cssFile);
+
+		// Add default CSS first so the rest can override it
+		fileReader = readInput(new String[] { defaultCssFile });
+		styles.add(AstCreatorCSS.generateAst(fileReader, defaultCssFile));
 
 		// Create CSS asts
 		for (String css : foundStyles) {
@@ -86,13 +88,13 @@ public class Main {
 			FindCssAstVisitor findCssVisitor = new FindCssAstVisitor();
 
 			@SuppressWarnings("unchecked")
-			Set<String> styles = (Set<String>) ast.accept(findCssVisitor, null);
-			System.out.println(styles);
+			Set<String> styles = (LinkedHashSet<String>) ast
+					.accept(findCssVisitor, null);
 			return styles;
 		}
 
 		System.err.println("FIND CSS VISITOR: AST has not been generated.");
-		return new HashSet<String>();
+		return new LinkedHashSet<String>();
 	}
 
 	private static void renderPageText(FormattedPage formattedPage,

@@ -1,7 +1,7 @@
 package css.main;
 
 import java.io.FileReader;
-
+import java.io.IOException;
 
 import html.ast.AstHtml;
 import html.parser.Lexicon;
@@ -15,6 +15,12 @@ public class AstCreatorHTML {
 
 		Lexicon lex = runLexicon(reader);
 		AstHtml ast = runParser(lex);
+		try {
+			reader.close();
+		} catch (IOException e) {
+			System.err.println(String.format("Error closing filereader:\n\t%s",
+					e.getMessage()));
+		}
 		return ast;
 
 	}

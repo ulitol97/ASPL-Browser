@@ -198,7 +198,6 @@ public class RenderVisitor implements Visitor {
 			List<FormattedText> texts = new ArrayList<FormattedText>();
 			// Recover map of styles from the parameter
 			Map<String, String> style = finalStyle.getStyleMap((String) param);
-
 			FormattedText formattedText = new FormattedText(text.text,
 					style.get(COLOR), style.get(FONT_SIZE),
 					style.get(FONT_STYLE));
@@ -272,10 +271,12 @@ public class RenderVisitor implements Visitor {
 	// Apply all style-sheets in cascade to compute a final style guide
 	private void computeFinalStyle() {
 		FinalStyle fs = new FinalStyle();
-		for (AstCss style : styles) {
-			for (String selector : selectors) {
-				Map<String, String> selectorStyle = new HashMap<String, String>();
-				for (String property : properties) {
+
+		for (String selector : selectors) {
+			Map<String, String> selectorStyle = new HashMap<String, String>();
+			for (String property : properties) {
+				for (AstCss style : styles) {
+					
 					String value = searchParam.search(selector, property,
 							style);
 					if (value != null) {
@@ -283,8 +284,8 @@ public class RenderVisitor implements Visitor {
 					}
 
 				}
-				fs.setStyleMap(selector, selectorStyle);
 			}
+			fs.setStyleMap(selector, selectorStyle);
 		}
 
 		this.finalStyle = fs;

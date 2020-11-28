@@ -1,6 +1,6 @@
 package html.visitor;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import html.ast.body.Body;
@@ -25,10 +25,11 @@ public class FindCssAstVisitor implements Visitor {
 
 	@Override
 	public Object visit(Head head, Object param) {
-		Set<String> styles = new HashSet<>();
+		Set<String> styles = new LinkedHashSet<String>();
 		for (Link link : head.links) {
 			styles.add((String) link.accept(this, null));
 		}
+		
 		return styles;
 	}
 
