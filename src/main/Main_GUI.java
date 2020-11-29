@@ -17,8 +17,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 
 import java.awt.Toolkit;
@@ -49,6 +51,8 @@ public class Main_GUI extends JFrame {
 					frame.setLocationRelativeTo(null);
 					frame.setTitle("UO251436 - Arquitecturas Software y "
 							+ "Procesamiento de Lenguajes");
+
+					frame.setMinimumSize(new Dimension(800, 600));
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -143,21 +147,42 @@ public class Main_GUI extends JFrame {
 
 		int newTabIndex = tabbedPane.getTabCount() - 1;
 
-		// Body pane
-		JPanel newTabPanel = new JPanel();
+		// Body content
+
+		JPanel tabContent = new JPanel();
+		tabbedPane.addTab("New tab", null, tabContent, null);
+		tabContent.setLayout(new BorderLayout(0, 0));
+
+		JPanel addressBar = new JPanel();
+		addressBar.setMinimumSize(new Dimension(150, 150));
+		tabContent.add(addressBar, BorderLayout.NORTH);
+		addressBar.setLayout(new BoxLayout(addressBar, BoxLayout.X_AXIS));
+
+		JButton backBtn = new JButton("Back");
+		addressBar.add(backBtn);
+
+		JButton nextBtn = new JButton("Next");
+		addressBar.add(nextBtn);
+
+		JTextField urlInput = new JTextField();
+		urlInput.setText("res/Welcome.html");
+		urlInput.setToolTipText("File to open");
+		addressBar.add(urlInput);
+		urlInput.setColumns(10);
+
+		JButton goBtn = new JButton("Go");
+		addressBar.add(goBtn);
+
 		tabbedPane.insertTab("New tab",
 				new ImageIcon(Main_GUI.class.getResource("/img/eii.jpg")),
-				newTabPanel, "New tab", newTabIndex);
+				tabContent, "New tab", newTabIndex);
 
-		// Tab pane
-
+		// Tab content
 		JPanel newTabTabPanel = new JPanel();
-		// Label
 		newTabTabPanel
 				.add(new JLabel("New tab - " + (tabbedPane.getTabCount() - 1)));
-
-		// Close button
-		newTabTabPanel.add(createCloseButton(newTabPanel));
+		
+		newTabTabPanel.add(createCloseButton(tabContent));
 		newTabTabPanel.setBackground(new Color(0, 0, 0, 0));
 
 		tabbedPane.setTabComponentAt(newTabIndex, newTabTabPanel);
@@ -183,9 +208,9 @@ public class Main_GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				// Close designated tab
 				tabbedPane.remove(panel);
-				
+
 				// If no tabs remain, close app
-				if (tabbedPane.getTabCount() -1 == 0) {
+				if (tabbedPane.getTabCount() - 1 == 0) {
 					System.out.println("No tabs left, closing browser.");
 					System.exit(0);
 				}
