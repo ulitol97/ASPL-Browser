@@ -1,6 +1,6 @@
-stylesheet: style* // OK
+stylesheet: style*
 
-style: selector OPENBRACE rule* CLOSEBRACE // OK
+style: selector OPENBRACE rule* CLOSEBRACE
 
 rule: key COLON value SEMICOLON
 
@@ -14,13 +14,13 @@ selector:  H1 | H2 | P // OK
 
 key: COLOR | FONTSIZE | TEXTALIGN | FONTSTYLE
 
-color: BLACK | RED | GREEN | BLUE | WHITE // OK
+color: BLACK | RED | GREEN | BLUE | WHITE
 
-alignment: LEFT | CENTER | RIGHT // OK
+alignment: LEFT | CENTER | RIGHT
 
-fontstyle: NORMAL | BOLD | ITALIC // OK
+fontstyle: NORMAL | BOLD | ITALIC
 
-// Léxico
+// Lexicon
 
 OPENBRACE: '{'
 CLOSEBRACE: '}'
@@ -45,6 +45,3 @@ CENTER: 'center'
 NORMAL: 'normal'
 BOLD: 'bold'
 ITALIC: 'italic'
-
-
-

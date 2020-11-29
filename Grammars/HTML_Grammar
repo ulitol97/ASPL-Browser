@@ -1,12 +1,10 @@
-document: DOCTYPE html
-
 html: OPENHTML head body CLOSEHTML
 
 head: OPENHEAD title link* CLOSEHEAD
 
 title: OPENTITLE text CLOSETITLE
 
-link: OPENLINK href rel type CLOSELINK
+link: OPENLINK href rel type TAGCLOSE
 
 href: HREF EQ QUOTE text QUOTE
 
@@ -26,9 +24,9 @@ paragraph: OPENP value CLOSEP
 
 value: (text | styledText)*
 
-text: word* // Podría ser [a-zA-Z0-9.,;]*   ?
+text: word*
 
-word: [a-zA-Z0-9.,;]+ // Es necesario?
+word: [a-zA-Z0-9.,;]+
 
 styledText: bold | italic | underline
 
@@ -38,9 +36,8 @@ italic: OPENITALIC value CLOSEITALIC
 
 underline: OPENUNDERLINE value CLOSEUNDERLINE
 
-// Léxico
+// Lexicon
 
-DOCTYPE: '!<DOCTYPE html>'
 OPENHTML: '<html>'
 CLOSEHTML: '</html>'
 HREF: 'href'
@@ -51,7 +48,6 @@ CLOSETITLE: '</title>'
 OPENHEAD: '<head>'
 CLOSEHEAD: '</head>'
 OPENLINK: '<link'
-CLOSELINK: 'rel="stylesheet" type="text/css">'
 OPENBODY: '<body>'
 CLOSEBODY: '</body>'
 OPENH1: '<h1>'
