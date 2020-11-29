@@ -29,9 +29,9 @@ public class PrintPageGUI implements IPrintPage {
 	public void printPage(FormattedPage formattedPage, PrintStream printStream)
 			throws Exception {
 		this.formattedPage = formattedPage;
-		System.out.println(String.format("\nShowing page in GUI browser: %s:",
+		System.out.println(String.format("\nShowing page in GUI browser: %s.",
 				formattedPage.getTitle()));
-		System.out.print(separator);
+		System.out.println(separator);
 
 		printPage();
 

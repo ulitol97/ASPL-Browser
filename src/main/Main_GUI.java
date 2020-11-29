@@ -110,7 +110,7 @@ public class Main_GUI extends JFrame {
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(Main_GUI.class.getResource("/img/favicon.jpg")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1000, 700);
+		setBounds(100, 100, 1000, 720);
 		mainPane = new JPanel();
 		mainPane.setBorder(new EmptyBorder(1, 1, 1, 1));
 		mainPane.setLayout(new BorderLayout(0, 0));
@@ -524,7 +524,6 @@ public class Main_GUI extends JFrame {
 			tabbedPane.getSelectedComponent().setName(formattedPage.getTitle());
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			String msg = buildErrorMessage(e.getMessage());
 
 			// Print error in console
