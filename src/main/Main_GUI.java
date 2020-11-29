@@ -7,11 +7,16 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -47,6 +53,7 @@ public class Main_GUI extends JFrame {
 	// Tab control
 	private int lastTabIndex = 0;
 	private Map<JPanel, String> currentUrls;
+	private Map<JPanel, JLabel> tabLabels;
 	private Map<JPanel, JTextField> urlInputs;
 	private Map<JPanel, JPanel> tabContents;
 
@@ -94,6 +101,7 @@ public class Main_GUI extends JFrame {
 		currentUrls = new HashMap<JPanel, String>();
 		urlInputs = new HashMap<JPanel, JTextField>();
 		tabContents = new HashMap<JPanel, JPanel>();
+		tabLabels = new HashMap<JPanel, JLabel>();
 
 		histories = new HashMap<JPanel, History>();
 		backButtons = new HashMap<JPanel, JButton>();
@@ -128,6 +136,7 @@ public class Main_GUI extends JFrame {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
+
 				// If clicked the new tab tab, simulate nothing happened (return
 				// to previous)
 				if (tabbedPane.getSelectedIndex() == tabbedPane.getTabCount()
@@ -201,8 +210,10 @@ public class Main_GUI extends JFrame {
 		tabContent.setLayout(new BorderLayout(0, 0));
 
 		JPanel contentPanel = new JPanel();
-		tabContent.add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+		JScrollPane scrollPane = new JScrollPane(contentPanel);
+		tabContent.add(scrollPane, BorderLayout.CENTER);
 
 		JPanel addressBar = new JPanel();
 		addressBar.setMinimumSize(new Dimension(150, 150));
@@ -228,8 +239,15 @@ public class Main_GUI extends JFrame {
 
 		// Tab content
 		JPanel newTabTabPanel = new JPanel();
-		newTabTabPanel
-				.add(new JLabel("New tab - " + (tabbedPane.getTabCount() - 1)));
+		JLabel tabLabel = new JLabel("New tab");
+		newTabTabPanel.add(tabLabel);
+
+		tabLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				tabbedPane.setSelectedComponent(tabContent);
+			}
+		});
 
 		newTabTabPanel.add(createCloseButton(tabContent));
 		newTabTabPanel.setBackground(new Color(0, 0, 0, 0));
@@ -244,6 +262,7 @@ public class Main_GUI extends JFrame {
 		nextButtons.put(tabContent, nextBtn);
 		urlInputs.put(tabContent, urlInput);
 		tabContents.put(tabContent, contentPanel);
+		tabLabels.put(tabContent, tabLabel);
 
 	}
 
@@ -328,21 +347,16 @@ public class Main_GUI extends JFrame {
 	 */
 	private JTextField createUrlInput(JPanel panel) {
 		JTextField urlInput = new JTextField();
-		urlInput.setText("res/Welcome.html");
+		urlInput.setText("res/html/EX4.html");
 		urlInput.setToolTipText("File to open");
-		urlInput.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				// Do nothing
-			}
-
+		urlInput.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				urlInput.setCaretPosition(urlInput.getText().length());
 
 			}
 		});
+		
 
 		urlInput.addActionListener(new ActionListener() {
 
@@ -421,6 +435,7 @@ public class Main_GUI extends JFrame {
 		currentUrls.remove(panel);
 		urlInputs.remove(panel);
 		tabContents.remove(panel);
+		tabLabels.remove(panel);
 
 		// If no tabs remain, close application
 		if (tabbedPane.getTabCount() - 1 == 0) {
@@ -482,10 +497,18 @@ public class Main_GUI extends JFrame {
 		// Process the file and print
 		System.out.println(String.format("Opening file: %s.\n", path));
 		try {
+
 			FormattedPage formattedPage = Main_NoGUI.processFile(path);
-			PrintPageGUI printer = new PrintPageGUI(source);
+			PrintPageGUI printer = new PrintPageGUI(tabContents.get(source));
 			printer.printPage(formattedPage, null);
+
+			// Change page Title and Tooltip
+			JLabel tabLabel = tabLabels.get(source);
+			tabLabel.setText(formattedPage.getTitle());
+			tabLabel.setToolTipText(String.format("HTML file at '%s'", path));
+
 		} catch (Exception e) {
+			e.printStackTrace();
 			String msg = buildErrorMessage(e.getMessage());
 
 			// Print error in console

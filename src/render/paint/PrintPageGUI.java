@@ -1,8 +1,14 @@
 package render.paint;
 
+import java.awt.Color;
 import java.io.PrintStream;
 
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import render.format.FormattedLine;
 import render.format.FormattedPage;
@@ -12,7 +18,6 @@ public class PrintPageGUI implements IPrintPage {
 
 	public static String separator = "\n------------------------\n";
 	private FormattedPage formattedPage;
-	private PrintStream printStream;
 	private JPanel pane;
 
 	public PrintPageGUI(JPanel pane) {
@@ -20,40 +25,142 @@ public class PrintPageGUI implements IPrintPage {
 	}
 
 	@Override
-	public void printPage(FormattedPage formattedPage,
-			PrintStream printStream) {
+	public void printPage(FormattedPage formattedPage, PrintStream printStream)
+			throws Exception {
 		this.formattedPage = formattedPage;
-		this.printStream = printStream;
-
-		System.out.println(String.format("\nPrinting page: %s:",
+		System.out.println(String.format("\nShowing page in GUI browser: %s:",
 				formattedPage.getTitle()));
 		System.out.print(separator);
-		
 
-		printTitle();
-		printBody();
+		printPage();
 
 	}
 
-	private void printTitle() {
-		printStream.print(String.format("Title: %s", formattedPage.getTitle()));
-		printStream.println(separator);
-	}
+	private void printPage() throws BadLocationException {
+		// Clear panel
+		pane.removeAll();
 
-	private void printBody() {
+		// Write to panel
+		JTextPane textPane = new JTextPane();
+		textPane.setEditable(false);
+
+		StyledDocument doc = textPane.getStyledDocument();
+
+		Style style = textPane.addStyle("docStyle", null);
+
 		for (FormattedLine line : formattedPage.getLines()) {
-			printStream
-					.println(String.format("(Line align: %s | Metrics: %s >>",
-							line.getTextAlign(), line.getMetrics()));
+			// Change the style with the line alignment and continue.
+			StyleConstants.setAlignment(style,
+					cssToSwingAlignment(line.getTextAlign()));
 
-			for (FormattedText text : line.getContents()) {
-				printStream.println(String.format(
-						"\t(Format: %s, %d, %s | Metrics: %d >> %s)",
-						text.color, text.fontSize, text.fontStyle,
-						text.getMetrics(), text.text));
+			for (int i = 0; i < line.getContents().size(); i++) {
+
+				FormattedText text = line.getContents().get(i);
+
+				// Change the style with the line alignment and insert the text.
+				// Color
+				StyleConstants.setForeground(style,
+						cssToSwingColor(text.color));
+
+				// Size
+				StyleConstants.setFontSize(style, text.fontSize);
+
+				// Style
+				cssToSwingStyle(style, text.fontStyle);
+
+				if (i != line.getContents().size() - 1) {
+					doc.insertString(doc.getLength(), text.text + " ", style);
+				} else {
+					doc.insertString(doc.getLength(), text.text, style);
+				}
 			}
 
-			printStream.println(")\n");
+			// Artificially add newline
+			doc.insertString(doc.getLength(), "\n", null);
+
 		}
+
+		pane.add(textPane);
+		
+		// Scroll to top
+		textPane.setCaretPosition(0);
+
+	}
+
+	private int cssToSwingAlignment(String cssValue) {
+		int ret = StyleConstants.ALIGN_LEFT;
+
+		switch (cssValue) {
+		case "left":
+			ret = StyleConstants.ALIGN_LEFT;
+			break;
+
+		case "center":
+			ret = StyleConstants.ALIGN_CENTER;
+			break;
+
+		case "right":
+			ret = StyleConstants.ALIGN_RIGHT;
+			break;
+
+		default:
+			break;
+		}
+
+		return ret;
+	}
+
+	private Color cssToSwingColor(String cssValue) {
+		Color ret = Color.BLACK;
+
+		switch (cssValue) {
+		case "black":
+			ret = Color.BLACK;
+			break;
+
+		case "red":
+			ret = Color.RED;
+			break;
+
+		case "green":
+			ret = Color.GREEN;
+			break;
+
+		case "blue":
+			ret = Color.BLUE;
+			break;
+
+		case "white":
+			ret = Color.WHITE;
+			break;
+
+		default:
+			break;
+		}
+
+		return ret;
+	}
+
+	private void cssToSwingStyle(Style style, String cssValue) {
+		switch (cssValue) {
+		case "bold":
+			StyleConstants.setBold(style, true);
+			StyleConstants.setItalic(style, false);
+			StyleConstants.setUnderline(style, false);
+			break;
+
+		case "italic":
+			StyleConstants.setItalic(style, true);
+			StyleConstants.setBold(style, false);
+			StyleConstants.setUnderline(style, false);
+			break;
+
+		default:
+			StyleConstants.setBold(style, false);
+			StyleConstants.setItalic(style, false);
+			StyleConstants.setUnderline(style, false);
+			break;
+		}
+
 	}
 }

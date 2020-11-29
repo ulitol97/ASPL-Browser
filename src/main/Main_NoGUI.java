@@ -40,7 +40,7 @@ public class Main_NoGUI {
 							+ e.getMessage());
 			System.exit(1);
 		}
-		
+
 		// Print page
 		if (formattedPage == null) {
 			System.err.println(
@@ -48,7 +48,14 @@ public class Main_NoGUI {
 			System.exit(2);
 		} else {
 			IPrintPage printer = new PrintPageTxt();
-			printer.printPage(formattedPage, System.out);
+			try {
+				printer.printPage(formattedPage, System.out);
+			} catch (Exception e) {
+				System.err.println(
+						"An error occurred printing the page. Reason:\n\t"
+								+ e.getMessage());
+				System.exit(3);
+			}
 		}
 
 	}

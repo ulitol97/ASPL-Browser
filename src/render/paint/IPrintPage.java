@@ -6,6 +6,7 @@ import render.format.FormattedPage;
 
 public interface IPrintPage {
 
-	void printPage(FormattedPage formattedPage, PrintStream printStream);
+	void printPage(FormattedPage formattedPage, PrintStream printStream)
+			throws Exception;
 
 }
