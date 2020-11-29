@@ -700,7 +700,7 @@ public class Parser {
 
 	public String getErrors() {
 		if (this.syntaxError) {
-			String ret = "\nErrors found running the parser:";
+			String ret = "\nErrors found running the parser:\n";
 			for (String error : errors) {
 				ret += "\t => " + error + "\n";
 			}

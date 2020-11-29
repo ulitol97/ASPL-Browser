@@ -396,7 +396,7 @@ public class Lexicon {
 
 	// Load the set of characters admitted by the lexical analyzer
 	void loadSet() {
-		String s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:+-*/()[]!?";
+		String s = "ABCDEFGHIJKLMNOPQRSTUVWXYZaábcdeéfghiíjklmnñoópqrstuúvwxyz0123456789@.,;:+-*/()[]!?";
 		int i = 0;
 		Character a = Character.valueOf('a');
 		while (i < s.length()) {
@@ -406,19 +406,10 @@ public class Lexicon {
 		}
 	}
 
-	// TODO
 	// Removes a comment enclosed between '<!--' and '-->' // /* */
 	boolean deleteComment() throws IOException {
 		boolean ret = false;
 		char nextChar;
-
-//		char nextChar = nextChar();
-//		if (nextChar != '-')
-//			return false;
-//
-//		nextChar = nextChar();
-//		if (nextChar != '-')
-//			return false;
 
 		do {
 			nextChar = nextChar();
@@ -488,7 +479,7 @@ public class Lexicon {
 
 	public String getErrors() {
 		if (this.lexError) {
-			String ret = "\nErrors found running the lexicon:";
+			String ret = "\nErrors found running the lexicon:\n";
 			for (String error : errors) {
 				ret += "\t => " + error + "\n";
 			}

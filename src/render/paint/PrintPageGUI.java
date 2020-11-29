@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -47,11 +48,17 @@ public class PrintPageGUI implements IPrintPage {
 		StyledDocument doc = textPane.getStyledDocument();
 
 		Style style = textPane.addStyle("docStyle", null);
+		SimpleAttributeSet alignment = new SimpleAttributeSet();
 
 		for (FormattedLine line : formattedPage.getLines()) {
 			// Change the style with the line alignment and continue.
 			StyleConstants.setAlignment(style,
 					cssToSwingAlignment(line.getTextAlign()));
+
+			StyleConstants.setAlignment(alignment,
+					cssToSwingAlignment(line.getTextAlign()));
+
+			doc.setParagraphAttributes(doc.getLength(), 0, alignment, false);
 
 			for (int i = 0; i < line.getContents().size(); i++) {
 
@@ -65,6 +72,8 @@ public class PrintPageGUI implements IPrintPage {
 				// Size
 				StyleConstants.setFontSize(style, text.fontSize);
 
+				System.out.println(
+						String.format("%s - %s", text.text, text.fontStyle));
 				// Style
 				cssToSwingStyle(style, text.fontStyle);
 
@@ -81,7 +90,7 @@ public class PrintPageGUI implements IPrintPage {
 		}
 
 		pane.add(textPane);
-		
+
 		// Scroll to top
 		textPane.setCaretPosition(0);
 

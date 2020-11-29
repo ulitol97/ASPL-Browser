@@ -1,0 +1,20 @@
+h1 {
+  color: black;
+  font-size: 28px;
+  text-align: left;
+  font-style: bold;
+}
+ 
+h2 {
+  color: black;
+  font-size: 22px;
+  font-style: bold;
+  text-align: center;
+}
+ 
+p {
+  color: black;
+  font-size: 16px;
+  text-align: left;
+  font-style: normal;
+}

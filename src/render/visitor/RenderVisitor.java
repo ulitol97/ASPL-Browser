@@ -34,6 +34,9 @@ public class RenderVisitor implements Visitor {
 	private final String SELECTOR_P = "p";
 	private List<String> selectors = new ArrayList<String>();
 
+	private final String STYLE_BOLD = "bold";
+	private final String STYLE_ITALIC = "italic";
+	
 	// CSS properties
 	private final String TEXT_ALIGN = "text-align";
 	private final String COLOR = "color";
@@ -139,7 +142,7 @@ public class RenderVisitor implements Visitor {
 			// Create the formatted text
 			FormattedText formattedText = new FormattedText(textContent,
 					style.get(COLOR), style.get(FONT_SIZE),
-					style.get(FONT_STYLE));
+					STYLE_BOLD);
 			// Add the formatted text
 			texts.add(formattedText);
 		}
@@ -161,7 +164,7 @@ public class RenderVisitor implements Visitor {
 			// Create the formatted text
 			FormattedText formattedText = new FormattedText(textContent,
 					style.get(COLOR), style.get(FONT_SIZE),
-					style.get(FONT_STYLE));
+					STYLE_ITALIC);
 			// Add the formatted text
 			texts.add(formattedText);
 		}

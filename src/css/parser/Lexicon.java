@@ -285,7 +285,7 @@ public class Lexicon {
 	
 	public String getErrors() {
 		if (this.lexError) {
-			String ret = "\nErrors found running the lexicon:";
+			String ret = "\nErrors found running the lexicon:\n";
 			for (String error : errors) {
 				ret += "\t => " + error + "\n";
 			}
