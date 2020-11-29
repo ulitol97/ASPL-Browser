@@ -36,7 +36,8 @@ public class RenderVisitor implements Visitor {
 
 	private final String STYLE_BOLD = "bold";
 	private final String STYLE_ITALIC = "italic";
-	
+	private final String STYLE_UNDERLINE = "underline";
+
 	// CSS properties
 	private final String TEXT_ALIGN = "text-align";
 	private final String COLOR = "color";
@@ -141,8 +142,7 @@ public class RenderVisitor implements Visitor {
 			String textContent = (String) text.accept(this, null);
 			// Create the formatted text
 			FormattedText formattedText = new FormattedText(textContent,
-					style.get(COLOR), style.get(FONT_SIZE),
-					STYLE_BOLD);
+					style.get(COLOR), style.get(FONT_SIZE), STYLE_BOLD);
 			// Add the formatted text
 			texts.add(formattedText);
 		}
@@ -163,8 +163,7 @@ public class RenderVisitor implements Visitor {
 			String textContent = (String) text.accept(this, null);
 			// Create the formatted text
 			FormattedText formattedText = new FormattedText(textContent,
-					style.get(COLOR), style.get(FONT_SIZE),
-					STYLE_ITALIC);
+					style.get(COLOR), style.get(FONT_SIZE), STYLE_ITALIC);
 			// Add the formatted text
 			texts.add(formattedText);
 		}
@@ -185,8 +184,7 @@ public class RenderVisitor implements Visitor {
 			String textContent = (String) text.accept(this, null);
 			// Create the formatted text
 			FormattedText formattedText = new FormattedText(textContent,
-					style.get(COLOR), style.get(FONT_SIZE),
-					style.get(FONT_STYLE));
+					style.get(COLOR), style.get(FONT_SIZE), STYLE_UNDERLINE);
 			// Add the formatted text
 			texts.add(formattedText);
 		}
@@ -279,7 +277,7 @@ public class RenderVisitor implements Visitor {
 			Map<String, String> selectorStyle = new HashMap<String, String>();
 			for (String property : properties) {
 				for (AstCss style : styles) {
-					
+
 					String value = searchParam.search(selector, property,
 							style);
 					if (value != null) {

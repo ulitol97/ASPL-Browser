@@ -606,9 +606,9 @@ public class Parser {
 		List<Text> texts = null;
 		Token tok = lex.getToken();
 
-		// Expect '<b>' (we know it is OK)
+		// Expect '<u>' (we know it is OK)
 		if (tok.getToken() != TokensId.OPENUNDERLINE) {
-			syntaxError(String.format("Expected '<b>', found '%s'",
+			syntaxError(String.format("Expected '<u>', found '%s'",
 					tok.getLexeme()), tok.getLine());
 		}
 
@@ -616,7 +616,7 @@ public class Parser {
 		texts = texts();
 
 		tok = lex.getToken();
-		// Expect '</b>'
+		// Expect '</u>'
 		if (tok.getToken() != TokensId.CLOSEUNDERLINE) {
 			syntaxError(
 					String.format("Expected '</u>' after '<u>' tag, found '%s'",

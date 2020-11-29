@@ -13,7 +13,7 @@ import css.visitor.SearchParamInCssVisitor;
 public class Main {
 
 	public static String separator = "\n------------------------\n";
-	public static String defaultFile = "EX1.css";
+	public static String defaultFile = "res/css/EX1.css";
 
 	public static void main(String[] args) {
 

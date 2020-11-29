@@ -72,15 +72,14 @@ public class PrintPageGUI implements IPrintPage {
 				// Size
 				StyleConstants.setFontSize(style, text.fontSize);
 
-				System.out.println(
-						String.format("%s - %s", text.text, text.fontStyle));
 				// Style
 				cssToSwingStyle(style, text.fontStyle);
 
+				doc.insertString(doc.getLength(), text.text, style);
+
 				if (i != line.getContents().size() - 1) {
-					doc.insertString(doc.getLength(), text.text + " ", style);
-				} else {
-					doc.insertString(doc.getLength(), text.text, style);
+					resetStyle(style);
+					doc.insertString(doc.getLength(), " ", style);
 				}
 			}
 
@@ -164,6 +163,12 @@ public class PrintPageGUI implements IPrintPage {
 			StyleConstants.setUnderline(style, false);
 			break;
 
+		case "underline":
+			StyleConstants.setUnderline(style, true);
+			StyleConstants.setItalic(style, true);
+			StyleConstants.setBold(style, false);
+			break;
+
 		default:
 			StyleConstants.setBold(style, false);
 			StyleConstants.setItalic(style, false);
@@ -171,5 +176,11 @@ public class PrintPageGUI implements IPrintPage {
 			break;
 		}
 
+	}
+
+	private void resetStyle(Style style) {
+		StyleConstants.setBold(style, false);
+		StyleConstants.setItalic(style, false);
+		StyleConstants.setUnderline(style, false);
 	}
 }

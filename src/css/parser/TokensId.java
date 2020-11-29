@@ -29,5 +29,6 @@ public enum TokensId {
 	NORMAL,
 	BOLD,
 	ITALIC,
+	UNDERLINE,
 	EOF
 }

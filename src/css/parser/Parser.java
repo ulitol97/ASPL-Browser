@@ -361,6 +361,10 @@ public class Parser {
 		case ITALIC:
 			fontStyle = "italic";
 			break;
+			
+		case UNDERLINE:
+			fontStyle = "underline";
+			break;
 
 		default:
 			syntaxError(

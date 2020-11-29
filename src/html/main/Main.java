@@ -15,7 +15,7 @@ import html.visitor.PrintHtmlAstVisitor;
 public class Main {
 
 	public static String separator = "\n------------------------\n";
-	public static String defaultFile = "EX4.html";
+	public static String defaultFile = "res/html/EX1.html";
 
 	public static void main(String[] args) {
 

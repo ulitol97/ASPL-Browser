@@ -145,6 +145,10 @@ public class Lexicon {
 						case "italic":
 							tokens.add(new Token(TokensId.ITALIC, ident, line));
 							break;
+							
+						case "underline":
+							tokens.add(new Token(TokensId.UNDERLINE, ident, line));
+							break;
 
 						default:
 							// ERROR: no matched tokens

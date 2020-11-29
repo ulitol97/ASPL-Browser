@@ -19,7 +19,7 @@ import render.visitor.RenderVisitor;
 
 public class Main_NoGUI {
 
-	private static String defaultHtmlFile = "res/html/EX4.html";
+	private static String defaultHtmlFile = "res/html/EX1.html";
 	private static String defaultCssFile = "res/css/Default.css";
 
 	/**

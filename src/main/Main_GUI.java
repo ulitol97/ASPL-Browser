@@ -43,6 +43,9 @@ public class Main_GUI extends JFrame {
 
 	private static final long serialVersionUID = -7811488186091705501L;
 
+	private static final String WELCOME_PAGE_PATH = "res/html/welcome.html";
+	private static final String URL_HINT = "res/html/...";
+
 	// UI
 	private JPanel mainPane;
 	private JTabbedPane tabbedPane;
@@ -81,7 +84,7 @@ public class Main_GUI extends JFrame {
 					frame.setTitle("UO251436 - Arquitecturas Software y "
 							+ "Procesamiento de Lenguajes");
 
-					frame.setMinimumSize(new Dimension(800, 600));
+					frame.setMinimumSize(new Dimension(600, 400));
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -115,7 +118,7 @@ public class Main_GUI extends JFrame {
 
 		createTabbedPane();
 		createNewTabButton();
-		newTab();
+		newTab(true);
 
 	}
 
@@ -183,7 +186,7 @@ public class Main_GUI extends JFrame {
 		newTabBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				newTab();
+				newTab(false);
 			}
 		});
 
@@ -194,7 +197,7 @@ public class Main_GUI extends JFrame {
 	 * @author UO251436 Create new tabs and their underlying structure and
 	 *         panel.
 	 */
-	private void newTab() {
+	private void newTab(boolean welcome) {
 
 		System.out.println("Opening new tab.");
 
@@ -260,6 +263,11 @@ public class Main_GUI extends JFrame {
 		urlInputs.put(tabContent, urlInput);
 		tabContents.put(tabContent, contentPanel);
 		tabLabels.put(tabContent, tabLabel);
+
+		// Open welcome page on first tab
+		if (welcome) {
+			openHtml(KEY_GO, WELCOME_PAGE_PATH, tabContent);
+		}
 
 	}
 
@@ -344,16 +352,25 @@ public class Main_GUI extends JFrame {
 	 */
 	private JTextField createUrlInput(JPanel panel) {
 		JTextField urlInput = new JTextField();
-		urlInput.setText("res/html/Welcome.html");
+		urlInput.setText(URL_HINT);
 		urlInput.setToolTipText("File to open");
 		urlInput.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
+				if (urlInput.getText().equals(URL_HINT)) {
+					urlInput.setText("");
+				}
 				urlInput.setCaretPosition(urlInput.getText().length());
 
 			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if (urlInput.getText().equals("")) {
+					urlInput.setText(URL_HINT);
+				}
+			}
 		});
-		
 
 		urlInput.addActionListener(new ActionListener() {
 
@@ -403,6 +420,7 @@ public class Main_GUI extends JFrame {
 		closeBtn.setBackground(new Color(0, 0, 0, 0));
 		closeBtn.setBorder(BorderFactory.createEmptyBorder());
 		closeBtn.setFocusPainted(false);
+		closeBtn.setToolTipText("Close tab");
 
 		closeBtn.addActionListener(new ActionListener() {
 
@@ -503,6 +521,7 @@ public class Main_GUI extends JFrame {
 			JLabel tabLabel = tabLabels.get(source);
 			tabLabel.setText(formattedPage.getTitle());
 			tabLabel.setToolTipText(String.format("HTML file at '%s'", path));
+			tabbedPane.getSelectedComponent().setName(formattedPage.getTitle());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -552,7 +571,6 @@ public class Main_GUI extends JFrame {
 		public String getPrevious() {
 			if (backRecords.size() > 0) {
 				String ret = backRecords.pop();
-				System.err.println(String.format("Prev.: %s", ret));
 				return ret;
 			}
 			return null;
@@ -561,7 +579,6 @@ public class Main_GUI extends JFrame {
 		public String getNext() {
 			if (nextRecords.size() > 0) {
 				String ret = nextRecords.pop();
-				System.err.println(String.format("Next.: %s", ret));
 				return ret;
 			}
 			return null;
