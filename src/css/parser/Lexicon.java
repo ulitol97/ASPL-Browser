@@ -282,4 +282,15 @@ public class Lexicon {
 			}
 		}
 	}
+	
+	public String getErrors() {
+		if (this.lexError) {
+			String ret = "\nErrors found running the lexicon:";
+			for (String error : errors) {
+				ret += "\t => " + error + "\n";
+			}
+			return ret;
+		}
+		return "Unknown";
+	}
 }

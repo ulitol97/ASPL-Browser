@@ -143,7 +143,7 @@ public class Parser {
 
 		if (syntaxError)
 			return null;
-		
+
 		return links;
 	}
 
@@ -696,6 +696,17 @@ public class Parser {
 				System.err.println("\t => " + error);
 			}
 		}
+	}
+
+	public String getErrors() {
+		if (this.syntaxError) {
+			String ret = "\nErrors found running the parser:";
+			for (String error : errors) {
+				ret += "\t => " + error + "\n";
+			}
+			return ret;
+		}
+		return "Unknown";
 	}
 
 }

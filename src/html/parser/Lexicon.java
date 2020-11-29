@@ -435,7 +435,7 @@ public class Lexicon {
 					while (nextChar == '-') {
 						nextChar = nextChar();
 					}
-					
+
 					if (nextChar == '>') {
 						ret = true;
 					}
@@ -484,5 +484,16 @@ public class Lexicon {
 				System.err.println("\t => " + error);
 			}
 		}
+	}
+
+	public String getErrors() {
+		if (this.lexError) {
+			String ret = "\nErrors found running the lexicon:";
+			for (String error : errors) {
+				ret += "\t => " + error + "\n";
+			}
+			return ret;
+		}
+		return "Unknown";
 	}
 }

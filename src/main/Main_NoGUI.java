@@ -2,7 +2,6 @@ package main;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,30 +19,59 @@ import render.visitor.RenderVisitor;
 
 public class Main_NoGUI {
 
-	public static String htmlFile = "EX4.html";
-	public static String defaultCssFile = "Default.css";
+	private static String defaultHtmlFile = "res/html/EX4.html";
+	private static String defaultCssFile = "res/css/Default.css";
 
+	/**
+	 * @author UO251436 Main method to be invoked when running the program
+	 *         without UI.
+	 */
 	public static void main(String[] args) {
 
+		String filePath = args.length > 0 ? args[0] : defaultHtmlFile;
+		FormattedPage formattedPage = null;
+
+		// Process HTML
+		try {
+			formattedPage = processFile(filePath);
+		} catch (Exception e) {
+			System.err.println(
+					"\nERROR: Could not parse the selected HTML file. Reason:\n\t=> "
+							+ e.getMessage());
+			System.exit(1);
+		}
+		
+		// Print page
+		if (formattedPage == null) {
+			System.err.println(
+					"RENDER PAGE TEXT: The formatted page could not be generated");
+			System.exit(2);
+		} else {
+			IPrintPage printer = new PrintPageTxt();
+			printer.printPage(formattedPage, System.out);
+		}
+
+	}
+
+	public static FormattedPage processFile(String path) throws Exception {
 		// File reader
-		FileReader fileReader = readInput(args);
+		FileReader fileReader = readInput(path);
 
 		// Create HTML ast
-		AstHtml astHtml = AstCreatorHTML.generateAst(fileReader, htmlFile);
+		AstHtml astHtml = AstCreatorHTML.generateAst(fileReader,
+				defaultHtmlFile);
 
 		// Find associated CSS
 		List<AstCss> styles = new ArrayList<AstCss>();
 		Set<String> foundStyles = runFindCssVisitor(astHtml);
 
 		// Add default CSS first so the rest can override it
-		fileReader = readInput(new String[] { defaultCssFile });
+		fileReader = readInput(defaultCssFile);
 		styles.add(AstCreatorCSS.generateAst(fileReader, defaultCssFile));
 
 		// Create CSS asts
 		for (String css : foundStyles) {
-			String[] params = new String[1];
-			params[0] = css;
-			fileReader = readInput(params);
+			fileReader = readInput(css);
 			styles.add(AstCreatorCSS.generateAst(fileReader, css));
 		}
 
@@ -52,34 +80,18 @@ public class Main_NoGUI {
 		FormattedPage formattedPage = (FormattedPage) astHtml
 				.accept(renderVisitor, null);
 
-		// Print page
-		renderPageText(formattedPage, System.out);
+		return formattedPage;
 
 	}
 
-	private static FileReader readInput(String[] args) {
+	private static FileReader readInput(String path) throws IOException {
 
 		FileReader fileReader = null;
 
-		try {
-			String filename = htmlFile;
-			if (args.length > 0) {
-				filename = args[0].strip();
-				htmlFile = filename;
-			}
+		String filename = path != null ? path : defaultHtmlFile;
+		fileReader = new FileReader(filename);
 
-			fileReader = new FileReader(filename);
-		} catch (IOException e) {
-			System.err.println(String.format("Error reading input:\n\t%s",
-					e.getMessage()));
-		}
-
-		if (fileReader == null) {
-			System.err.println("\nError parsing input file. Ending execution.");
-			System.exit(-1);
-			return null;
-		} else
-			return fileReader;
+		return fileReader;
 
 	}
 
@@ -93,22 +105,8 @@ public class Main_NoGUI {
 			return styles;
 		}
 
-		System.err.println("FIND CSS VISITOR: AST has not been generated.");
-		return new LinkedHashSet<String>();
-	}
-
-	private static void renderPageText(FormattedPage formattedPage,
-			PrintStream printStream) {
-
-		if (formattedPage == null) {
-			System.err.println(
-					"RENDER PAGE TEXT: The formatted page could not be generated");
-			return;
-		}
-
-		IPrintPage printer = new PrintPageTxt();
-		printer.printPage(formattedPage, printStream);
-
+		throw new RuntimeException(
+				"FIND CSS VISITOR: AST has not been generated.");
 	}
 
 }

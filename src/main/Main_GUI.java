@@ -7,22 +7,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +16,25 @@ import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import render.format.FormattedPage;
+import render.paint.PrintPageGUI;
 
 public class Main_GUI extends JFrame {
 
@@ -45,7 +48,8 @@ public class Main_GUI extends JFrame {
 	private int lastTabIndex = 0;
 	private Map<JPanel, String> currentUrls;
 	private Map<JPanel, JTextField> urlInputs;
-	
+	private Map<JPanel, JPanel> tabContents;
+
 	// History
 	private Map<JPanel, History> histories;
 	private Map<JPanel, JButton> backButtons;
@@ -54,8 +58,14 @@ public class Main_GUI extends JFrame {
 	private static final String KEY_NEXT = "next";
 	private static final String KEY_GO = "go";
 
+	// Styling
+	private final static Font ERROR_FONT = new Font(Font.DIALOG, Font.ITALIC,
+			18);
+	private final static Color ERROR_COLOR = Color.RED;
+
 	/**
-	 * Launch the application.
+	 * @author UO251436 Launch the application and configure basic window
+	 *         parameters.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -77,12 +87,13 @@ public class Main_GUI extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * @author UO251436 Create the frame and initialize variables.
 	 */
 	public Main_GUI() {
-		
+
 		currentUrls = new HashMap<JPanel, String>();
 		urlInputs = new HashMap<JPanel, JTextField>();
+		tabContents = new HashMap<JPanel, JPanel>();
 
 		histories = new HashMap<JPanel, History>();
 		backButtons = new HashMap<JPanel, JButton>();
@@ -103,6 +114,10 @@ public class Main_GUI extends JFrame {
 
 	}
 
+	/**
+	 * @author UO251436 Create the tabbed pane that serves as the core of the
+	 *         UI. Store the pane as an attribute.
+	 */
 	private void createTabbedPane() {
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -130,6 +145,11 @@ public class Main_GUI extends JFrame {
 
 	}
 
+	/**
+	 * @author UO251436 Creates a new JButton with the expected style and
+	 *         behavior to create new tabs and links it to the application
+	 *         tabbed panel.
+	 */
 	private void createNewTabButton() {
 
 		// New tab
@@ -164,6 +184,10 @@ public class Main_GUI extends JFrame {
 		tabbedPane.setTabComponentAt(0, newTabBtn);
 	}
 
+	/**
+	 * @author UO251436 Create new tabs and their underlying structure and
+	 *         panel.
+	 */
 	private void newTab() {
 
 		System.out.println("Opening new tab.");
@@ -175,6 +199,10 @@ public class Main_GUI extends JFrame {
 		JPanel tabContent = new JPanel();
 		tabbedPane.addTab("New tab", null, tabContent, null);
 		tabContent.setLayout(new BorderLayout(0, 0));
+
+		JPanel contentPanel = new JPanel();
+		tabContent.add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.X_AXIS));
 
 		JPanel addressBar = new JPanel();
 		addressBar.setMinimumSize(new Dimension(150, 150));
@@ -215,9 +243,15 @@ public class Main_GUI extends JFrame {
 		backButtons.put(tabContent, backBtn);
 		nextButtons.put(tabContent, nextBtn);
 		urlInputs.put(tabContent, urlInput);
+		tabContents.put(tabContent, contentPanel);
 
 	}
 
+	/**
+	 * @author UO251436 Factory called when a new back button is needed.
+	 * @return Returns a JButton with the expected style and behavior to return
+	 *         the browser to a previous page.
+	 */
 	private JButton createBackButton(JPanel panel) {
 		JButton backBtn = new JButton("<-");
 		backBtn.setFocusPainted(false);
@@ -233,7 +267,7 @@ public class Main_GUI extends JFrame {
 
 				if (history.nPrevRecords() == 0)
 					backBtn.setEnabled(false);
-				
+
 				String currentUrl = currentUrls.get(panel);
 				if (currentUrl != null) {
 					history.pushRecordNext(currentUrl);
@@ -250,6 +284,11 @@ public class Main_GUI extends JFrame {
 		return backBtn;
 	}
 
+	/**
+	 * @author UO251436 Factory called when a new next button is needed.
+	 * @return Returns a JButton with the expected style and behavior to return
+	 *         the browser to the next page (if available).
+	 */
 	private JButton createNextButton(JPanel panel) {
 		JButton nextBtn = new JButton("->");
 		nextBtn.setFocusPainted(false);
@@ -265,7 +304,7 @@ public class Main_GUI extends JFrame {
 
 				if (history.nNextRecords() == 0)
 					nextBtn.setEnabled(false);
-				
+
 				String currentUrl = currentUrls.get(panel);
 				if (currentUrl != null) {
 					history.pushRecordBack(currentUrl);
@@ -282,6 +321,11 @@ public class Main_GUI extends JFrame {
 		return nextBtn;
 	}
 
+	/**
+	 * @author UO251436 Factory called when a new input is needed.
+	 * @return Returns a JText field with the expected style and behavior to act
+	 *         as the browser navbar.
+	 */
 	private JTextField createUrlInput(JPanel panel) {
 		JTextField urlInput = new JTextField();
 		urlInput.setText("res/Welcome.html");
@@ -312,6 +356,11 @@ public class Main_GUI extends JFrame {
 
 	}
 
+	/**
+	 * @author UO251436 Factory called when a new GO button is needed.
+	 * @return Returns a JButton with the expected style and behavior to act as
+	 *         the browser go button that triggers the html load.
+	 */
 	private JButton createGoButton(JTextField urlInput, JPanel panel) {
 		JButton goBtn = new JButton("Go!");
 		goBtn.setFocusPainted(false);
@@ -327,6 +376,12 @@ public class Main_GUI extends JFrame {
 		return goBtn;
 	}
 
+	/**
+	 * @author UO251436 Factory called when a new close button for the tabs is
+	 *         needed.
+	 * @return Returns a JButton with the expected style and behavior to act as
+	 *         a tab-closer.
+	 */
 	private JButton createCloseButton(JPanel panel) {
 		ImageIcon icon = (ImageIcon) UIManager.getIcon("OptionPane.errorIcon");
 		Image image = icon.getImage();
@@ -349,6 +404,9 @@ public class Main_GUI extends JFrame {
 		return closeBtn;
 	}
 
+	/**
+	 * @author UO251436 Closes a specific tab, given the JPanel it contains.
+	 */
 	private void closeTab(JPanel panel) {
 
 		if (tabbedPane.getSelectedComponent() == panel) {
@@ -360,6 +418,9 @@ public class Main_GUI extends JFrame {
 		histories.remove(panel);
 		backButtons.remove(panel);
 		nextButtons.remove(panel);
+		currentUrls.remove(panel);
+		urlInputs.remove(panel);
+		tabContents.remove(panel);
 
 		// If no tabs remain, close application
 		if (tabbedPane.getTabCount() - 1 == 0) {
@@ -369,16 +430,24 @@ public class Main_GUI extends JFrame {
 
 	}
 
+	/**
+	 * @author UO251436 Sets the currently focused tab, given its index.
+	 */
 	private void setCurrentTab(int index) {
 		tabbedPane.setSelectedIndex(index);
 	}
 
+	/**
+	 * @author UO251436 Loads the HTML passed as a parameter and renders its
+	 *         contents in the corresponding tab.
+	 * @param path   Location of the HTML file.
+	 * @param source JPanel of the tab in which to render the HTML.
+	 */
 	private void openHtml(String key, String path, JPanel source) {
 
 		String currentUrl = currentUrls.get(source);
 		if (path.equals(currentUrl))
 			return;
-		
 
 		switch (key) {
 		// If we accessed from url bar, enable back button, push to history
@@ -389,7 +458,7 @@ public class Main_GUI extends JFrame {
 				// Clear stack of next urls
 				histories.get(source).nextRecords.clear();
 				nextButtons.get(source).setEnabled(false);
-				
+
 				backButtons.get(source).setEnabled(true);
 			}
 			break;
@@ -406,14 +475,50 @@ public class Main_GUI extends JFrame {
 			break;
 		}
 
+		// Set url input text to new url
 		currentUrls.put(source, path);
 		urlInputs.get(source).setText(path);
-		System.out.println(String.format("Opening file: %s.", path));
-		
-		// Set url input text to new url
+
+		// Process the file and print
+		System.out.println(String.format("Opening file: %s.\n", path));
+		try {
+			FormattedPage formattedPage = Main_NoGUI.processFile(path);
+			PrintPageGUI printer = new PrintPageGUI(source);
+			printer.printPage(formattedPage, null);
+		} catch (Exception e) {
+			String msg = buildErrorMessage(e.getMessage());
+
+			// Print error in console
+			System.err.println(msg);
+
+			// Show error in browser
+			JPanel contentsPanel = tabContents.get(source);
+
+			contentsPanel.removeAll();
+
+			JTextPane textPane = new JTextPane();
+			textPane.setEditable(false);
+
+			textPane.setFont(ERROR_FONT);
+			textPane.setForeground(ERROR_COLOR);
+
+			contentsPanel.add(textPane);
+			textPane.setText(msg);
+		}
 
 	}
 
+	private String buildErrorMessage(String e) {
+		String ret = "Could not process the HTML page requested:\n";
+		ret += "\t" + e;
+		return ret;
+	}
+
+	/**
+	 * 
+	 * @author UO251436 Abstraction of a simple history functionality consisting
+	 *         supported by two stacks.
+	 */
 	private class History {
 
 		private Stack<String> backRecords;
@@ -445,7 +550,7 @@ public class Main_GUI extends JFrame {
 		public void pushRecordBack(String rec) {
 			backRecords.push(rec);
 		}
-		
+
 		public void pushRecordNext(String rec) {
 			nextRecords.push(rec);
 		}

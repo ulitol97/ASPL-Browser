@@ -2,15 +2,22 @@ package render.paint;
 
 import java.io.PrintStream;
 
+import javax.swing.JPanel;
+
 import render.format.FormattedLine;
 import render.format.FormattedPage;
 import render.format.FormattedText;
 
-public class PrintPageTxt implements IPrintPage {
+public class PrintPageGUI implements IPrintPage {
 
 	public static String separator = "\n------------------------\n";
 	private FormattedPage formattedPage;
 	private PrintStream printStream;
+	private JPanel pane;
+
+	public PrintPageGUI(JPanel pane) {
+		this.pane = pane;
+	}
 
 	@Override
 	public void printPage(FormattedPage formattedPage,
@@ -21,6 +28,7 @@ public class PrintPageTxt implements IPrintPage {
 		System.out.println(String.format("\nPrinting page: %s:",
 				formattedPage.getTitle()));
 		System.out.print(separator);
+		
 
 		printTitle();
 		printBody();
@@ -34,8 +42,9 @@ public class PrintPageTxt implements IPrintPage {
 
 	private void printBody() {
 		for (FormattedLine line : formattedPage.getLines()) {
-			printStream.println(String.format("(Line align: %s | Metrics: %s >>",
-					line.getTextAlign(), line.getMetrics()));
+			printStream
+					.println(String.format("(Line align: %s | Metrics: %s >>",
+							line.getTextAlign(), line.getMetrics()));
 
 			for (FormattedText text : line.getContents()) {
 				printStream.println(String.format(
@@ -43,7 +52,7 @@ public class PrintPageTxt implements IPrintPage {
 						text.color, text.fontSize, text.fontStyle,
 						text.getMetrics(), text.text));
 			}
-			
+
 			printStream.println(")\n");
 		}
 	}
