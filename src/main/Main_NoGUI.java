@@ -7,9 +7,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import css.AstCreatorCSS;
 import css.ast.AstCss;
-import css.main.AstCreatorCSS;
-import css.main.AstCreatorHTML;
+import html.AstCreatorHTML;
 import html.ast.AstHtml;
 import html.visitor.FindCssAstVisitor;
 import render.format.FormattedPage;

@@ -1,4 +1,4 @@
-package css.main;
+package html;
 
 import java.io.FileReader;
 import html.ast.AstHtml;

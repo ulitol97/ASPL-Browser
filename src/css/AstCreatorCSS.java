@@ -1,4 +1,4 @@
-package css.main;
+package css;
 
 import java.io.FileReader;
 
